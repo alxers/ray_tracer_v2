@@ -1,37 +1,54 @@
 #include <iostream>
 #include "ray.h"
 
-struct box
+// struct box
+// {
+//     float x;
+//     float y;
+//     float z;
+// };
+
+// box box1;
+
+struct box3
 {
-    float x;
-    float y;
-    float z;
+    // min and max bounds
+    vec3 vmin;
+    vec3 vmax;
 };
+
+// test box
+vec3 min(-0.5, -0.5, -2.0);
+vec3 max(0.5, 0.5, -3.0);
+box3 b;
+b.vmin = vec3 min(-0.5, -0.5, -2.0);
+// box.vmax = max;
+
 
 bool intersect(const ray &r) 
 {
-    box min;
-    box max;
+    // box min;
+    // box max;
 
-    min.x = -0.5;
-    min.y = -0.5;
-    min.z = -2.0;
+    // min.x = -0.5;
+    // min.y = -0.5;
+    // min.z = -2.0;
 
-    max.x = 0.5;
-    max.y = 0.5;
-    max.z = -3.0;
+    // max.x = 0.5;
+    // max.y = 0.5;
+    // max.z = -3.0;
 
 
-    float tmin = (min.x - r.origin().x()) / r.direction().x(); 
-    float tmax = (max.x - r.origin().x()) / r.direction().x(); 
+    float tmin = (min.x() - r.origin().x()) / r.direction().x(); 
+    float tmax = (max.x() - r.origin().x()) / r.direction().x(); 
 
     // std::cout << "orig" << r.origin().x() << " " << r.origin().y() << " " << r.origin().z() << "\n";
     // std::cout << "direc"<< r.direction().x() << " " << r.direction().y() << " " << r.direction().z() << "\n";
  
     if (tmin > tmax) std::swap(tmin, tmax); 
  
-    float tymin = (min.y - r.origin().y()) / r.direction().y(); 
-    float tymax = (max.y - r.origin().y()) / r.direction().y(); 
+    float tymin = (min.y() - r.origin().y()) / r.direction().y(); 
+    float tymax = (max.y() - r.origin().y()) / r.direction().y(); 
  
     if (tymin > tymax) std::swap(tymin, tymax); 
  
@@ -44,8 +61,8 @@ bool intersect(const ray &r)
     if (tymax < tmax) 
         tmax = tymax; 
  
-    float tzmin = (min.z - r.origin().z()) / r.direction().z(); 
-    float tzmax = (max.z - r.origin().z()) / r.direction().z(); 
+    float tzmin = (min.z() - r.origin().z()) / r.direction().z(); 
+    float tzmax = (max.z() - r.origin().z()) / r.direction().z(); 
  
     if (tzmin > tzmax) std::swap(tzmin, tzmax); 
  
@@ -78,6 +95,12 @@ bool hit_sphere(const vec3& center, float radius, const ray& r) {
 //  vec3 unit_direction = unit_vector(r.direction());
 //  float t = 0.5*(unit_direction.y() + 1.0);
 //  return (1.0-t)*vec3(1.0, 1.0, 1.0) + t*vec3(0.5, 0.7, 1.0);
+// }
+
+// Calculate normal for the cube
+// vec3 normal(box b, vec3 hit) {
+//     vec3 centerPoint = ((box.min + box.max) * 0.5,
+//         );
 // }
 
 vec3 color(const ray& r) {
