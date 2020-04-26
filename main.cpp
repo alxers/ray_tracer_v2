@@ -1,14 +1,6 @@
 #include <iostream>
+#include <stdlib.h>
 #include "ray.h"
-
-// struct box
-// {
-//     float x;
-//     float y;
-//     float z;
-// };
-
-// box box1;
 
 struct box3
 {
@@ -20,30 +12,13 @@ struct box3
 // test box
 vec3 min(-0.5, -0.5, -2.0);
 vec3 max(0.5, 0.5, -3.0);
-box3 b;
-b.vmin = vec3 min(-0.5, -0.5, -2.0);
-// box.vmax = max;
-
+// box3 b;
+box3 b = { min, max };
 
 bool intersect(const ray &r) 
 {
-    // box min;
-    // box max;
-
-    // min.x = -0.5;
-    // min.y = -0.5;
-    // min.z = -2.0;
-
-    // max.x = 0.5;
-    // max.y = 0.5;
-    // max.z = -3.0;
-
-
     float tmin = (min.x() - r.origin().x()) / r.direction().x(); 
     float tmax = (max.x() - r.origin().x()) / r.direction().x(); 
-
-    // std::cout << "orig" << r.origin().x() << " " << r.origin().y() << " " << r.origin().z() << "\n";
-    // std::cout << "direc"<< r.direction().x() << " " << r.direction().y() << " " << r.direction().z() << "\n";
  
     if (tmin > tmax) std::swap(tmin, tmax); 
  
@@ -98,18 +73,38 @@ bool hit_sphere(const vec3& center, float radius, const ray& r) {
 // }
 
 // Calculate normal for the cube
-// vec3 normal(box b, vec3 hit) {
-//     vec3 centerPoint = ((box.min + box.max) * 0.5,
-//         );
-// }
+vec3 normal(box3 box, vec3 hit) {
+    vec3 centerPoint(
+        (box.vmin.x() + box.vmax.x()) * 0.5,
+        (box.vmin.y() + box.vmax.y()) * 0.5,
+        (box.vmin.z() + box.vmax.z()) * 0.5
+    );
+
+    vec3 p = hit - centerPoint;
+
+    float dx = abs(box.vmin.x() - box.vmax.x())/2;
+    float dy = abs(box.vmin.y() - box.vmax.y())/2;
+    float dz = abs(box.vmin.z() - box.vmax.z())/2;
+
+    vec3 n(
+        (int) p.x()/dx,
+        (int) p.y()/dy,
+        (int) p.z()/dx
+    );
+
+    return unit_vector(n);
+}
 
 vec3 color(const ray& r) {
-    // Box b(vec3(-1.0, 0.0, 0.0), vec3());
+
+    vec3 n = normal(b, r.direction());
+
     if (intersect(r)) {
         if(r.direction().z() == -2.0) {
             return vec3(1, 0.5, 0);
         } else {
-            return vec3(1, 0, 0);
+            // The actual color in RGB
+            return vec3(0, 1, 0);
         }
     }
 
