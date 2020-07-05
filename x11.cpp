@@ -1,6 +1,9 @@
 // In freebsd
 // cc x11.c -I /usr/local/include -L /usr/local/lib/ -l X11
 
+// Linux
+// gcc hi.cpp -o hi -lX11
+
 #include <X11/Xlib.h>
 #include <stdio.h>
 #include <stdlib.h>
