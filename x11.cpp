@@ -31,8 +31,6 @@ int main(void) {
   XEvent event;
   const char *msg = "Hello, World!";
   int screen;
-  KeySym key;
-  char text[255]; // Buffer for KeyPress events
 
   int w_height = 640;
   int w_width = 480;
@@ -44,7 +42,7 @@ int main(void) {
   }
 
   screen = DefaultScreen(disp);
-  win = XCreateSimpleWindow(disp, RootWindow(disp, screen), w_height, w_width, 100, 100, 1,
+  win = XCreateSimpleWindow(disp, RootWindow(disp, screen), 0, 0, w_width, w_height, 1,
                            BlackPixel(disp, screen), WhitePixel(disp, screen));
   XSelectInput(disp, win, ExposureMask | KeyPressMask);
   XMapWindow(disp, win);
@@ -56,18 +54,6 @@ int main(void) {
   vec3 vertical(0.0, 2.0, 0.0);
   vec3 origin(-2.0, 2.0, 0.0);
   // end Ray setup
-
-  // for (int j = w_height - 1; j >= 0; j--) {
-  //   for (int i = 0; i < w_width; i++) {
-  //     float r = float(j) / float(w_width - 1);
-  //     float g = float(i) / float(w_height - 1);
-  //     float b = 0.25;
-
-  //     int ir = int(255.999 * r);
-  //     int ig = int(255.999 * g);
-  //     int ib = int(255.999 * b);
-  //   }
-  // }
   
   while (1) {
      XNextEvent(disp, &event);
@@ -91,7 +77,6 @@ int main(void) {
        }
      }
      if (event.type == KeyPress) {
-       //printf("Key: %x\n", event.xkey.keycode);
        if (event.xkey.keycode == W_KEY) {
 	 XSetForeground(disp, DefaultGC(disp, screen), _rgb(0, 0, 0));
 	 XFillRectangle(disp, win, DefaultGC(disp, screen), 30, 30, 10, 10);
