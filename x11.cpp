@@ -1,9 +1,6 @@
 // In freebsd
 // cc x11.c -I /usr/local/include -L /usr/local/lib/ -l X11
 
-// Linux
-// gcc hi.cpp -o hi -lX11
-
 #include <X11/Xlib.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,6 +24,27 @@ unsigned long _rgb(int r, int g, int b) {
   return b + (g << 8) + (r << 16);
 }
 
+// Ray helper functions
+bool hit_sphere(const vec3& center, float radius, const ray& r) {
+    vec3 oc = r.origin() - center;
+    auto a = dot(r.direction(), r.direction());
+    auto b = 2.0 * dot(oc, r.direction());
+    auto c = dot(oc, oc) - radius*radius;
+    auto discriminant = b*b - 4*a*c;
+    return (discriminant > 0);
+}
+
+vec3 color(const ray& r) {
+  if (hit_sphere(vec3(0, 0, -1), 0.5, r)) {
+    return vec3(0, 1, 0);
+  }
+  vec3 unit_direction = unit_vector(r.direction());
+  float t = 0.5 * (unit_direction.y() + 1.0);
+  return (1.0 - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0);
+}
+
+// end Ray helper functions
+
 int main(void) {
   // X window setup
   Display *disp;
@@ -35,8 +53,8 @@ int main(void) {
   const char *msg = "Hello, World!";
   int screen;
 
-  int w_height = 640;
-  int w_width = 480;
+  int w_height = 100;
+  int w_width = 200;
 
   disp = XOpenDisplay(NULL);
   if (disp == NULL) {
@@ -45,7 +63,7 @@ int main(void) {
   }
 
   screen = DefaultScreen(disp);
-  win = XCreateSimpleWindow(disp, RootWindow(disp, screen), 0, 0, w_width, w_height, 1,
+  win = XCreateSimpleWindow(disp, RootWindow(disp, screen), 0, 0, w_width, w_height, 0,
                            BlackPixel(disp, screen), WhitePixel(disp, screen));
   XSelectInput(disp, win, ExposureMask | KeyPressMask);
   XMapWindow(disp, win);
@@ -55,7 +73,7 @@ int main(void) {
   vec3 lower_left_corner(-2.0, -1.0, -1.0);
   vec3 horizontal(4.0, 0.0, 0.0);
   vec3 vertical(0.0, 2.0, 0.0);
-  vec3 origin(-2.0, 2.0, 0.0);
+  vec3 origin(0.0, 0.0, 0.0);
   // end Ray setup
   
   while (1) {
@@ -64,13 +82,15 @@ int main(void) {
 
        for (int j = w_height - 1; j >= 0; j--) {
 	 for (int i = 0; i < w_width; i++) {
-	   float r = float(j) / float(w_width - 1);
-	   float g = float(i) / float(w_height - 1);
-	   float b = 0.25;
-
-	   int ir = int(255.999 * r);
-	   int ig = int(255.999 * g);
-	   int ib = int(255.999 * b);
+	   float u = float(i) / float(w_width - 1);
+	   float v = float(j) / float(w_height - 1);
+	   ray r(origin, lower_left_corner + u * horizontal + v * vertical);
+	   
+	   vec3 col = color(r);
+	   
+	   int ir = int(255.999 * col[0]);
+	   int ig = int(255.999 * col[1]);
+	   int ib = int(255.999 * col[2]);
 
 	   // Set colors
 	   XSetForeground(disp, DefaultGC(disp, screen), _rgb(ir, ig, ib));
