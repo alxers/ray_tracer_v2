@@ -1,5 +1,8 @@
-// In freebsd
+// Freebsd
 // cc x11.c -I /usr/local/include -L /usr/local/lib/ -l X11
+
+// Linux
+// cc x11.cpp -I /usr/local/include -L /usr/lib/x86_64-linux-gnu/X11 -l X11 -lm -lstdc++
 
 #include <X11/Xlib.h>
 #include <stdio.h>
