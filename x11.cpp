@@ -2,7 +2,7 @@
 // cc x11.c -I /usr/local/include -L /usr/local/lib/ -l X11
 
 // Linux
-// cc x11.cpp -I /usr/local/include -L /usr/lib/x86_64-linux-gnu/X11 -l X11 -lm -lstdc++// In freebsd
+// cc x11.cpp -I /usr/local/include -L /usr/lib/x86_64-linux-gnu/X11 -l X11 -lm -lstdc++
 
 #include <X11/Xlib.h>
 #include <stdio.h>
@@ -36,7 +36,7 @@ struct box3
 };
 
 // test box
-vec3 min(-0.5, -0.5, -2.0);
+vec3 min(-0.5, -0.5, -1.0);
 vec3 max(0.5, 0.5, -3.0);
 // box3 b;
 box3 b = { min, max };
@@ -123,15 +123,11 @@ vec3 normal(box3 box, vec3 hit) {
 
 vec3 color(const ray& r) {
 
-    vec3 n = normal(b, r.direction());
 
-    if (intersect(r)) {
-      if(n.y() > 0) {
-            return vec3(1, 0.5, 0);
-        } else {
-            // The actual color in RGB
-            return vec3(0, 1, 0);
-        }
+    if (intersect(r) > 0.0) {
+    	vec3 n = normal(b, r.direction());
+	printf("n is: %f, %f, %f \n", n.x(), n.y(), n.z());
+	return 0.5 * vec3(n.x()+1, n.y()+1, n.z()+1);
     }
 
     vec3 unit_direction = unit_vector(r.direction());
@@ -206,10 +202,10 @@ int main(void) {
      if (event.type == KeyPress) {
        // We'll move camera depending on a key pressed
        if (event.xkey.keycode == W_KEY) {
-	 // Change the view and draw everythin again
+	 // Change the view and draw everything again
 	 // NOTE: just change the origin for now
 	 // TODO: make the actuall correct camera rotation
-	 origin = vec3(-2.0, 2.0, 0.0);
+	 origin = vec3(-1.0, 1.5, 0.0);
 	 
 	 draw();
        }
