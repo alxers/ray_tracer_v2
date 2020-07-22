@@ -2,7 +2,7 @@
 // cc x11.c -I /usr/local/include -L /usr/local/lib/ -l X11
 
 // Linux
-// cc x11.cpp -I /usr/local/include -L /usr/lib/x86_64-linux-gnu/X11 -l X11 -lm -lstdc++
+// cc x11.cpp -I /usr/local/include -L /usr/lib/x86_64-linux-gnu/X11 -l X11 -lm -lstdc++ -ggdb
 
 #include <X11/Xlib.h>
 #include <stdio.h>
@@ -30,7 +30,7 @@ unsigned long _rgb(int r, int g, int b) {
 
 // Ray helper functions
 
-bool hit_sphere(const vec3& center, float radius, const ray& r) {
+float hit_sphere(const vec3& center, float radius, const ray& r) {
   vec3 oc = r.origin() - center;
   float a = dot(r.direction(), r.direction());
   float b = 2.0 * dot(oc, r.direction());
@@ -39,19 +39,19 @@ bool hit_sphere(const vec3& center, float radius, const ray& r) {
   if (discriminant < 0) {
     return -1.0;
   } else {
-    return (-b - sqrt(discriminant) / (2.0 * a));
+    return (-b - sqrt(discriminant)) / (2.0 * a);
   }
 }
 
 vec3 color(const ray& r) {
-  // float t = hit_sphere(vec3(0,0,-1), 0.5, r);
-  // if (t > 0.0) {
-  //   vec3 n = unit_vector(r.point_at_parameter(t) - vec3(0, 0, -1));
-  //   return 0.5 * vec3(n.x() + 1, n.y() + 1, n.z() + 1);
-  // }
+  float t = hit_sphere(vec3(0,0,-1), 0.5, r);
+  if (t > 0.0) {
+    vec3 n = unit_vector(r.point_at_parameter(t) - vec3(0, 0, -1));
+    return 0.5 * vec3(n.x() + 1, n.y() + 1, n.z() + 1);
+  }
 
   vec3 unit_direction = unit_vector(r.direction());
-  float t = 0.5*(unit_direction.y() + 1.0);
+  t = 0.5*(unit_direction.y() + 1.0);
   return (1.0-t)*vec3(1.0, 1.0, 1.0) + t*vec3(0.5, 0.7, 1.0);
 }
 
@@ -74,30 +74,26 @@ int screen;
 
 void draw() {
   for (int j = w_height - 1; j >= 0; --j) {
+  // for (int j = 0; j < w_height; ++j) {
     for (int i = 0; i < w_width; ++i) {
       float u = float(i) / float(w_width - 1);
       float v = float(j) / float(w_height - 1);
-      // ray r(origin, lower_left_corner + u * horizontal + v * vertical);
+      ray r(origin, lower_left_corner + u * horizontal + v * vertical);
 
-      // vec3 col = color(r);
+      vec3 col = color(r);
 
-      // int ir = int(255.999 * col[0]);
-      // int ig = int(255.999 * col[1]);
-      // int ib = int(255.999 * col[2]);
-
-      float r = float(i) / float(w_width -1);
-      float g = float(j) / float(w_height -1);
-      float b = 0.2;
-      int ir = int(255.999 * r);
-      int ig = int(255.999 * g);
-      int ib = int(255.999 * b);
+      int ir = int(255.999 * col[0]);
+      int ig = int(255.999 * col[1]);
+      int ib = int(255.999 * col[2]);
 
       // Set colors
       XSetForeground(disp, DefaultGC(disp, screen), _rgb(ir, ig, ib));
       // Actually draw a pixel at (i, j) coords
       // TODO: check if XDrawPoints() will be faster
       // in that case prepare array of points
-      XDrawPoint(disp, win, DefaultGC(disp, screen), i, j);
+
+      // We use "height - j" because otherwise the image would be flipped vertically
+      XDrawPoint(disp, win, DefaultGC(disp, screen), i, w_height - j);
     }
   }
 }
@@ -132,9 +128,11 @@ int main(void) {
         // Change the view and draw everything again
         // NOTE: just change the origin for now
         // TODO: make the actuall correct camera rotation
-        origin = vec3(-1.0, 1.5, 0.0);
+        // origin = vec3(-1.0, 1.5, 0.0);
    
-        draw();
+        // draw();
+        XSetForeground(disp, DefaultGC(disp, screen), _rgb(255, 1, 127));
+        XDrawPoint(disp, win, DefaultGC(disp, screen), 5, 5);
       }
 
       if (event.xkey.keycode == Q_KEY) {
