@@ -10,7 +10,8 @@
 #include <string.h>
 
 #include "ray.h"
-#include "box.c"
+// #include "box.c"
+#include "sphere.h"
 
 #define Q_KEY 0x18
 #define W_KEY 0x19
@@ -30,21 +31,22 @@ unsigned long _rgb(int r, int g, int b) {
 
 // Ray helper functions
 
-float hit_sphere(const vec3& center, float radius, const ray& r) {
-  vec3 oc = r.origin() - center;
-  float a = dot(r.direction(), r.direction());
-  float b = 2.0 * dot(oc, r.direction());
-  float c = dot(oc, oc) - radius*radius;
-  float discriminant = b*b - 4*a*c;
-  if (discriminant < 0) {
-    return -1.0;
-  } else {
-    return (-b - sqrt(discriminant)) / (2.0 * a);
-  }
-}
+// float hit_sphere(const vec3& center, float radius, const ray& r) {
+//   vec3 oc = r.origin() - center;
+//   float a = dot(r.direction(), r.direction());
+//   float b = 2.0 * dot(oc, r.direction());
+//   float c = dot(oc, oc) - radius*radius;
+//   float discriminant = b*b - 4*a*c;
+//   if (discriminant < 0) {
+//     return -1.0;
+//   } else {
+//     return (-b - sqrt(discriminant)) / (2.0 * a);
+//   }
+// }
+
 
 vec3 color(const ray& r) {
-  float t = hit_sphere(vec3(0,0,-1), 0.5, r);
+  float t = hit_sphere(&sp, r, 0, 0, &hr);
   if (t > 0.0) {
     vec3 n = unit_vector(r.point_at_parameter(t) - vec3(0, 0, -1));
     return 0.5 * vec3(n.x() + 1, n.y() + 1, n.z() + 1);
@@ -73,14 +75,18 @@ int screen;
 // End Xlib variables
 
 void draw() {
+  struct sphere sp = { vec3(0, 0, -1), 0.5 };
+  struct hit_record hr;
+
+  struct sphere spheres[10];
+
   for (int j = w_height - 1; j >= 0; --j) {
-  // for (int j = 0; j < w_height; ++j) {
     for (int i = 0; i < w_width; ++i) {
       float u = float(i) / float(w_width - 1);
       float v = float(j) / float(w_height - 1);
       ray r(origin, lower_left_corner + u * horizontal + v * vertical);
 
-      vec3 col = color(r);
+      vec3 col = color(r, spheres);
 
       int ir = int(255.999 * col[0]);
       int ig = int(255.999 * col[1]);
