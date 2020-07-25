@@ -31,30 +31,33 @@ unsigned long _rgb(int r, int g, int b) {
 
 // Ray helper functions
 
-// float hit_sphere(const vec3& center, float radius, const ray& r) {
-//   vec3 oc = r.origin() - center;
-//   float a = dot(r.direction(), r.direction());
-//   float b = 2.0 * dot(oc, r.direction());
-//   float c = dot(oc, oc) - radius*radius;
-//   float discriminant = b*b - 4*a*c;
-//   if (discriminant < 0) {
-//     return -1.0;
-//   } else {
-//     return (-b - sqrt(discriminant)) / (2.0 * a);
-//   }
-// }
 
+vec3 color(const ray& r, struct sphere *spheres, size_t arr_size) {
+  hit_record rec;
+  hit_record temp_rec;
+  float t_min = 0.0;
+  float t_max = MAXFLOAT;
 
-vec3 color(const ray& r) {
-  float t = hit_sphere(&sp, r, 0, 0, &hr);
-  if (t > 0.0) {
-    vec3 n = unit_vector(r.point_at_parameter(t) - vec3(0, 0, -1));
-    return 0.5 * vec3(n.x() + 1, n.y() + 1, n.z() + 1);
+  bool hit_anything = false;
+  double closest_so_far = t_max;
+  for (int i = 0; i < arr_size; i++) {
+    if (hit_sphere(&spheres[i], r, t_min, closest_so_far, &temp_rec)) {
+      hit_anything = true;
+      closest_so_far = temp_rec.t;
+      rec = temp_rec;
+    } else {
+      hit_anything = false;
+      rec = {}; // ?
+    }
   }
 
-  vec3 unit_direction = unit_vector(r.direction());
-  t = 0.5*(unit_direction.y() + 1.0);
-  return (1.0-t)*vec3(1.0, 1.0, 1.0) + t*vec3(0.5, 0.7, 1.0);
+  if (hit_anything) {
+    return 0.5 * vec3(rec.normal.x() + 1, rec.normal.y() + 1, rec.normal.z() + 1);
+  } else {
+    vec3 unit_direction = unit_vector(r.direction());
+    float t = 0.5*(unit_direction.y() + 1.0);
+    return (1.0-t)*vec3(1.0, 1.0, 1.0) + t*vec3(0.5, 0.7, 1.0);
+  }
 }
 
 
@@ -75,10 +78,12 @@ int screen;
 // End Xlib variables
 
 void draw() {
-  struct sphere sp = { vec3(0, 0, -1), 0.5 };
-  struct hit_record hr;
+  struct sphere sp1 = { vec3(0, 0, -1), 0.5 };
+  struct sphere sp2 = { vec3(0, -100.5, -1), 100 };
+  // struct hit_record hr;
 
-  struct sphere spheres[10];
+  struct sphere spheres[] = { sp1, sp2 };
+  size_t arr_size = 2;
 
   for (int j = w_height - 1; j >= 0; --j) {
     for (int i = 0; i < w_width; ++i) {
@@ -86,7 +91,7 @@ void draw() {
       float v = float(j) / float(w_height - 1);
       ray r(origin, lower_left_corner + u * horizontal + v * vertical);
 
-      vec3 col = color(r, spheres);
+      vec3 col = color(r, spheres, arr_size);
 
       int ir = int(255.999 * col[0]);
       int ig = int(255.999 * col[1]);

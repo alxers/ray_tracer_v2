@@ -10,9 +10,18 @@ struct hit_record
   vec3 normal;
 };
 
-struct hittable_list
-{
-  
-};
+// bool hit(ray &r, float t_min, float t_max, hit_record &rec) {
+//   hit_record temp_rec;
+//   bool hit_anything = false;
+//   double closest_so_far = t_max;
+//   for (int i = 0; i < world.size; i++) {
+//     if (world[i].hit(r, t_min, closest_so_far, temp_rec)) {
+//       hit_anything = true;
+//       closest_so_far = temp_rec.t;
+//       rec = temp_rec;
+//     }
+//   }
+//   return hit_anything;
+// }
 
 #endif
