@@ -10,7 +10,7 @@
 #include <string.h>
 
 #include "ray.h"
-// #include "box.c"
+#include "hittable.h"
 #include "sphere.h"
 
 #define Q_KEY 0x18
@@ -45,9 +45,6 @@ vec3 color(const ray& r, struct sphere *spheres, size_t arr_size) {
       hit_anything = true;
       closest_so_far = temp_rec.t;
       rec = temp_rec;
-    } else {
-      hit_anything = false;
-      rec = {}; // ?
     }
   }
 
@@ -80,7 +77,6 @@ int screen;
 void draw() {
   struct sphere sp1 = { vec3(0, 0, -1), 0.5 };
   struct sphere sp2 = { vec3(0, -100.5, -1), 100 };
-  // struct hit_record hr;
 
   struct sphere spheres[] = { sp1, sp2 };
   size_t arr_size = 2;
