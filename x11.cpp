@@ -30,14 +30,34 @@ unsigned long _rgb(int r, int g, int b) {
   return b + (g << 8) + (r << 16);
 }
 
+// Random number in 0 <= num < 1
+float random_num() {
+  // TODO: replace rand()
+  // return rand() % ();
+  return 0;
+}
+
 // Ray helper functions
 
+vec3 random_in_uniq_sphere() {
+  vec3 p;
+  do {
+    p = 2.0 * vec3(drand48(), drand48(), drand48()) - vec3(1, 1, 1);
+  } while (dot(p, p) >= 1);
+  return p;
+}
 
-vec3 color(const ray& r, struct sphere *spheres, size_t arr_size) {
+
+vec3 color(const ray& r, struct sphere *spheres, size_t arr_size, int depth) {
   hit_record rec;
   hit_record temp_rec;
   float t_min = 0.0;
   float t_max = MAXFLOAT;
+
+  // Guard from too deep recursion
+  if (depth <= 0) {
+    return vec3(0, 0, 0);
+  }
 
   bool hit_anything = false;
   double closest_so_far = t_max;
@@ -50,7 +70,9 @@ vec3 color(const ray& r, struct sphere *spheres, size_t arr_size) {
   }
 
   if (hit_anything) {
-    return 0.5 * vec3(rec.normal.x() + 1, rec.normal.y() + 1, rec.normal.z() + 1);
+    // return 0.5 * vec3(rec.normal.x() + 1, rec.normal.y() + 1, rec.normal.z() + 1);
+    vec3 target = rec.p + rec.normal + random_in_uniq_sphere();
+    return 0.5 * color(ray(rec.p, target - rec.p), spheres, arr_size, depth - 1);
   } else {
     vec3 unit_direction = unit_vector(r.direction());
     float t = 0.5*(unit_direction.y() + 1.0);
@@ -61,19 +83,10 @@ vec3 color(const ray& r, struct sphere *spheres, size_t arr_size) {
 
 int w_width = 400;
 int w_height = 200;
+// Off by default, makes rendering too slow
+bool ANTIALIASING = false;
 int samples_per_pixel = 100;
-
-// // Ray setup
-// // vec3 lower_left_corner(-2.0, -1.0, -1.0);
-// // vec3 horizontal(4.0, 0.0, 0.0);
-// // vec3 vertical(0.0, 2.0, 0.0);
-// // vec3 origin = vec3(0.0, 0.0, 0.0);
-// struct camera cam;
-// cam.lower_left_corner = vec3(-2.0, -1.0, -1.0);
-// cam.horizontal = vec3(4.0, 0.0, 0.0);
-// cam.vertical = vec3(0.0, 2.0, 0.0);
-// cam.origin = vec3(0.0, 0.0, 0.0);
-// // end Ray setup
+int max_depth = 30;
 
 // Xlib variables
 Display *disp;
@@ -90,17 +103,29 @@ void draw(struct camera cam) {
 
   for (int j = w_height - 1; j >= 0; --j) {
     for (int i = 0; i < w_width; ++i) {
-      
-      vec3 col(0, 0, 0);
 
-      for (int s = 0; s < samples_per_pixel; s++) {
+      vec3 col;
+
+      if (ANTIALIASING) {
+        col = vec3(0, 0, 0);
+        for (int s = 0; s < samples_per_pixel; s++) {
+          float u = float(i + drand48()) / float(w_width - 1);
+          float v = float(j + drand48()) / float(w_height - 1);
+          ray r = get_ray(u, v, cam);
+          col += color(r, spheres, arr_size, max_depth);
+        }
+
+        col /= float(samples_per_pixel);
+      } else {
         float u = float(i) / float(w_width - 1);
         float v = float(j) / float(w_height - 1);
-        ray r = get_ray(u, v, cam);
-        col += color(r, spheres, arr_size);
-      }
 
-      col /= float(samples_per_pixel);
+        ray r = get_ray(u, v, cam);
+        col = color(r, spheres, arr_size, max_depth);
+        // Compensate gamma correctness?
+        col = vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
+        // col = vec3(1/2*(col[0]), 1/2*(col[1]), 1/2*(col[2]));
+      }
 
       int ir = int(255.999 * col[0]);
       int ig = int(255.999 * col[1]);
@@ -157,7 +182,6 @@ int main(void) {
         // NOTE: just change the origin for now
         // TODO: make the actuall correct camera rotation
         // origin = vec3(-1.0, 1.5, 0.0);
-   
         // draw();
         XSetForeground(disp, DefaultGC(disp, screen), _rgb(255, 1, 127));
         XDrawPoint(disp, win, DefaultGC(disp, screen), 5, 5);
