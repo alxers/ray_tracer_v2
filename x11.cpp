@@ -12,6 +12,7 @@
 #include "ray.h"
 #include "hittable.h"
 #include "sphere.h"
+#include "camera.h"
 
 #define Q_KEY 0x18
 #define W_KEY 0x19
@@ -58,15 +59,21 @@ vec3 color(const ray& r, struct sphere *spheres, size_t arr_size) {
 }
 
 
-unsigned int w_width = 400;
-unsigned int w_height = 200;
+int w_width = 400;
+int w_height = 200;
+int samples_per_pixel = 100;
 
-// Ray setup
-vec3 lower_left_corner(-2.0, -1.0, -1.0);
-vec3 horizontal(4.0, 0.0, 0.0);
-vec3 vertical(0.0, 2.0, 0.0);
-vec3 origin = vec3(0.0, 0.0, 0.0);
-// end Ray setup
+// // Ray setup
+// // vec3 lower_left_corner(-2.0, -1.0, -1.0);
+// // vec3 horizontal(4.0, 0.0, 0.0);
+// // vec3 vertical(0.0, 2.0, 0.0);
+// // vec3 origin = vec3(0.0, 0.0, 0.0);
+// struct camera cam;
+// cam.lower_left_corner = vec3(-2.0, -1.0, -1.0);
+// cam.horizontal = vec3(4.0, 0.0, 0.0);
+// cam.vertical = vec3(0.0, 2.0, 0.0);
+// cam.origin = vec3(0.0, 0.0, 0.0);
+// // end Ray setup
 
 // Xlib variables
 Display *disp;
@@ -74,7 +81,7 @@ Window win;
 int screen;
 // End Xlib variables
 
-void draw() {
+void draw(struct camera cam) {
   struct sphere sp1 = { vec3(0, 0, -1), 0.5 };
   struct sphere sp2 = { vec3(0, -100.5, -1), 100 };
 
@@ -83,11 +90,17 @@ void draw() {
 
   for (int j = w_height - 1; j >= 0; --j) {
     for (int i = 0; i < w_width; ++i) {
-      float u = float(i) / float(w_width - 1);
-      float v = float(j) / float(w_height - 1);
-      ray r(origin, lower_left_corner + u * horizontal + v * vertical);
+      
+      vec3 col(0, 0, 0);
 
-      vec3 col = color(r, spheres, arr_size);
+      for (int s = 0; s < samples_per_pixel; s++) {
+        float u = float(i) / float(w_width - 1);
+        float v = float(j) / float(w_height - 1);
+        ray r = get_ray(u, v, cam);
+        col += color(r, spheres, arr_size);
+      }
+
+      col /= float(samples_per_pixel);
 
       int ir = int(255.999 * col[0]);
       int ig = int(255.999 * col[1]);
@@ -123,11 +136,19 @@ int main(void) {
   XSelectInput(disp, win, ExposureMask | KeyPressMask);
   XMapWindow(disp, win);
   // end X window setup
+
+  // Ray setup
+  struct camera cam;
+  cam.lower_left_corner = vec3(-2.0, -1.0, -1.0);
+  cam.horizontal = vec3(4.0, 0.0, 0.0);
+  cam.vertical = vec3(0.0, 2.0, 0.0);
+  cam.origin = vec3(0.0, 0.0, 0.0);
+  // end Ray setup
   
   while (1) {
     XNextEvent(disp, &event);
     if (event.type == Expose) {
-      draw();
+      draw(cam);
     }
      if (event.type == KeyPress) {
       // We'll move camera depending on a key pressed
