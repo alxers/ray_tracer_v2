@@ -1,10 +1,13 @@
 #ifndef SPHEREH
 #define SPHEREH
 
+#include "material.h"
+
 struct sphere
 {
   vec3 center;
   float radius;
+  struct material mat;
 };
 
 float hit_sphere(struct sphere *s, const ray& r, float t_min, float t_max, hit_record *rec) {

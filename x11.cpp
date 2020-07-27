@@ -95,11 +95,17 @@ int screen;
 // End Xlib variables
 
 void draw(struct camera cam) {
-  struct sphere sp1 = { vec3(0, 0, -1), 0.5 };
-  struct sphere sp2 = { vec3(0, -100.5, -1), 100 };
+  struct material mat1 = { "lambertian", vec3(0.8, 0.3, 0.3) };
+  struct material mat2 = { "lambertian", vec3(0.8, 0.8, 0.0) };
+  struct material mat3 = { "metal", vec3(0.8, 0.6, 0.2) };
+  struct material mat4 = { "metal", vec3(0.8, 0.6, 0.8) };
+  struct sphere sp1 = { vec3(0, 0, -1), 0.5, mat1 };
+  struct sphere sp2 = { vec3(0, -100.5, -1), 100, mat2 };
+  struct sphere sp3 = { vec3(1, 0, -1), 0.5, mat3 };
+  struct sphere sp4 = { vec3(-1, 0, -1), 0.5, mat4 };
 
-  struct sphere spheres[] = { sp1, sp2 };
-  size_t arr_size = 2;
+  struct sphere spheres[] = { sp1, sp2, sp3, sp4 };
+  size_t arr_size = 4;
 
   for (int j = w_height - 1; j >= 0; --j) {
     for (int i = 0; i < w_width; ++i) {
@@ -124,7 +130,6 @@ void draw(struct camera cam) {
         col = color(r, spheres, arr_size, max_depth);
         // Compensate gamma correctness?
         col = vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
-        // col = vec3(1/2*(col[0]), 1/2*(col[1]), 1/2*(col[2]));
       }
 
       int ir = int(255.999 * col[0]);
