@@ -7,4 +7,8 @@ struct material {
   vec3 albedo;
 };
 
+vec3 reflect(vec3 *v, vec3 *n) {
+	return v - 2 * dot(v, n) * n;
+}
+
 #endif
