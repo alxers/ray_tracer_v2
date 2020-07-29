@@ -12,9 +12,10 @@ struct sphere
 
 float hit_sphere(struct sphere *s, const ray& r, float t_min, float t_max, hit_record *rec) {
   vec3 oc = r.origin() - s->center;
-  float a = dot(r.direction(), r.direction());
-  float b = dot(oc, r.direction());
-  float c = dot(oc, oc) - s->radius * s->radius;
+  vec3 r_dir = r.direction();
+  float a = dot(&r_dir, &r_dir);
+  float b = dot(&oc, &r_dir);
+  float c = dot(&oc, &oc) - s->radius * s->radius;
   float discriminant = b*b - a*c;
   if (discriminant > 0) {
     float temp = (-b - sqrt(b * b - a * c)) / a;
