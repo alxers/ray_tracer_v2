@@ -2,7 +2,9 @@
 #define MATERIALH
 
 struct material {
-  char type[20];
+  // 1 - lambertian
+  // 2 - metal
+  int type;
   // Measure of diffuse reflection
   vec3 albedo;
 };
@@ -20,18 +22,18 @@ vec3 reflect(vec3 *v, vec3 *n) {
 }
 
 // Lambertian reflectance is the property that defines an ideal "matte" or diffusely reflecting surface
-bool lambertian_scatter(ray *r_in, hit_record *rec, vec3 attenuation, ray *scattered, struct material *mat) {
+bool lambertian_scatter(ray *r_in, hit_record *rec, vec3 *attenuation, ray *scattered, struct material *mat) {
   vec3 target = rec->p + rec->normal + random_in_unit_sphere();
   *scattered = ray(rec->p, target - rec->p);
-  attenuation = mat->albedo;
+  *attenuation = mat->albedo;
   return true;
 }
 
-bool metal_scatter(ray *r_in, hit_record *rec, vec3 attenuation, ray *scattered, struct material *mat) {
+bool metal_scatter(ray *r_in, hit_record *rec, vec3 *attenuation, ray *scattered, struct material *mat) {
   vec3 unit_vec_dir = unit_vector(r_in->direction());
   vec3 reflected = reflect(&unit_vec_dir, &rec->normal);
   *scattered = ray(rec->p, reflected);
-  attenuation = mat->albedo;
+  *attenuation = mat->albedo;
   vec3 scattered_dir = scattered->direction();
   return (dot(&scattered_dir, &(rec->normal)) > 0);
 }

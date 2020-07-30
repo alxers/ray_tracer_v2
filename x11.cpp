@@ -40,11 +40,12 @@ float random_num() {
 // Ray helper functions
 
 
-vec3 color(const ray& r, struct sphere *spheres, size_t arr_size, int depth) {
+vec3 color(ray& r, struct sphere *spheres, size_t arr_size, int depth) {
   hit_record rec;
   hit_record temp_rec;
   float t_min = 0.0;
   float t_max = MAXFLOAT;
+  struct material mat;
 
   // Guard from too deep recursion
   if (depth <= 0) {
@@ -58,13 +59,28 @@ vec3 color(const ray& r, struct sphere *spheres, size_t arr_size, int depth) {
       hit_anything = true;
       closest_so_far = temp_rec.t;
       rec = temp_rec;
+      mat = spheres[i].mat;
     }
   }
 
   if (hit_anything) {
-    // return 0.5 * vec3(rec.normal.x() + 1, rec.normal.y() + 1, rec.normal.z() + 1);
-    vec3 target = rec.p + rec.normal + random_in_unit_sphere();
-    return 0.5 * color(ray(rec.p, target - rec.p), spheres, arr_size, depth - 1);
+    ray scattered;
+    vec3 attenuation;
+    if (mat.type == 1) {
+      if (lambertian_scatter(&r, &rec, &attenuation, &scattered, &mat)) {
+        return attenuation * color(scattered, spheres, arr_size, depth - 1);
+      } else {
+        return vec3(0, 0, 0);
+      }
+    } else if (mat.type == 2) {
+      if (metal_scatter(&r, &rec, &attenuation, &scattered, &mat)) {
+        return attenuation * color(scattered, spheres, arr_size, depth - 1);
+      } else {
+        return vec3(0, 0, 0);
+      }
+    } else {
+      return vec3(0, 0, 0);
+    }
   } else {
     vec3 unit_direction = unit_vector(r.direction());
     float t = 0.5*(unit_direction.y() + 1.0);
@@ -77,7 +93,7 @@ int w_width = 400;
 int w_height = 200;
 // Off by default, makes rendering too slow
 bool ANTIALIASING = false;
-int samples_per_pixel = 100;
+int samples_per_pixel = 50;
 int max_depth = 30;
 
 // Xlib variables
@@ -87,10 +103,10 @@ int screen;
 // End Xlib variables
 
 void draw(struct camera cam) {
-  struct material mat1 = { "lambertian", vec3(0.8, 0.3, 0.3) };
-  struct material mat2 = { "lambertian", vec3(0.8, 0.8, 0.0) };
-  struct material mat3 = { "metal", vec3(0.8, 0.6, 0.2) };
-  struct material mat4 = { "metal", vec3(0.8, 0.6, 0.8) };
+  struct material mat1 = { 1, vec3(0.8, 0.3, 0.3) };
+  struct material mat2 = { 1, vec3(0.8, 0.8, 0.0) };
+  struct material mat3 = { 2, vec3(0.8, 0.6, 0.2) };
+  struct material mat4 = { 2, vec3(0.8, 0.6, 0.8) };
   struct sphere sp1 = { vec3(0, 0, -1), 0.5, mat1 };
   struct sphere sp2 = { vec3(0, -100.5, -1), 100, mat2 };
   struct sphere sp3 = { vec3(1, 0, -1), 0.5, mat3 };
