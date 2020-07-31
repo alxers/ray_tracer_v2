@@ -4,16 +4,6 @@
 // Linux
 // cc x11.cpp -I /usr/local/include -L /usr/lib/x86_64-linux-gnu/X11 -l X11 -lm -lstdc++ -ggdb
 
-#include <X11/Xlib.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "ray.h"
-#include "hittable.h"
-#include "sphere.h"
-#include "camera.h"
-
 #define Q_KEY 0x18
 #define W_KEY 0x19
 #define A_KEY 0x26
@@ -24,6 +14,19 @@
 #define DOWN_KEY 0x74
 #define LEFT_KEY 0x71
 #define RIGHT_KEY 0x72
+
+#define M_PI 3.1415926535
+
+#include <X11/Xlib.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
+#include "ray.h"
+#include "hittable.h"
+#include "sphere.h"
+#include "camera.h"
 
 // Make mapping so that it's possible to use RGB in Xlib
 unsigned long _rgb(int r, int g, int b) {
@@ -177,10 +180,11 @@ int main(void) {
 
   // Ray setup
   struct camera cam;
-  cam.lower_left_corner = vec3(-2.0, -1.0, -1.0);
-  cam.horizontal = vec3(4.0, 0.0, 0.0);
-  cam.vertical = vec3(0.0, 2.0, 0.0);
-  cam.origin = vec3(0.0, 0.0, 0.0);
+  set_cam(vec3(-2, 2, 1), vec3(0, 0, -1), vec3(0, 1, 0), 90, float(w_width)/float(w_height), &cam);
+  // cam.lower_left_corner = vec3(-2.0, -1.0, -1.0);
+  // cam.horizontal = vec3(4.0, 0.0, 0.0);
+  // cam.vertical = vec3(0.0, 2.0, 0.0);
+  // cam.origin = vec3(0.0, 0.0, 0.0);
   // end Ray setup
   
   while (1) {
