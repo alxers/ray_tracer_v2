@@ -18,7 +18,7 @@ void set_cam(vec3 lookfrom, vec3 lookat, vec3 vup, float vfov, float aspect, str
   w = unit_vector(lookfrom - lookat);
   u = unit_vector(cross(vup, w));
   v = cross(w, u);
-  cam->lower_left_corner = vec3(-half_width, -half_height, -1.0);
+  // cam->lower_left_corner = vec3(-half_width, -half_height, -1.0);
   cam->lower_left_corner = cam->origin - half_width * u - half_height * v - w;
   cam->horizontal = 2 * half_width * u;
   cam->vertical = 2 * half_height * v;

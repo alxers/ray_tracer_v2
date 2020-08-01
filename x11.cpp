@@ -9,6 +9,8 @@
 #define A_KEY 0x26
 #define S_KEY 0x27
 #define D_KEY 0x28
+#define Z_KEY 0x34
+#define X_KEY 0x35
 
 #define UP_KEY 0x6f
 #define DOWN_KEY 0x74
@@ -180,11 +182,16 @@ int main(void) {
 
   // Ray setup
   struct camera cam;
-  set_cam(vec3(-2, 2, 1), vec3(0, 0, -1), vec3(0, 1, 0), 90, float(w_width)/float(w_height), &cam);
-  // cam.lower_left_corner = vec3(-2.0, -1.0, -1.0);
-  // cam.horizontal = vec3(4.0, 0.0, 0.0);
-  // cam.vertical = vec3(0.0, 2.0, 0.0);
-  // cam.origin = vec3(0.0, 0.0, 0.0);
+
+  int lfrom_x = -2;
+  int lfrom_y = 2;
+  int lfrom_z = 1;
+  vec3 lookfrom = vec3(lfrom_x, lfrom_y, lfrom_z);
+  vec3 lookat = vec3(0, 0, -1);
+  vec3 vup = vec3(0, 1, 0);
+  int vfov = 20;
+  float a_ratio = float(w_width)/float(w_height);
+  set_cam(lookfrom, lookat, vup, vfov, a_ratio, &cam);
   // end Ray setup
   
   while (1) {
@@ -193,15 +200,43 @@ int main(void) {
       draw(cam);
     }
      if (event.type == KeyPress) {
+      // printf("Key: %x\n", event.xkey.keycode);
       // We'll move camera depending on a key pressed
       if (event.xkey.keycode == W_KEY) {
-        // Change the view and draw everything again
-        // NOTE: just change the origin for now
-        // TODO: make the actuall correct camera rotation
-        // origin = vec3(-1.0, 1.5, 0.0);
-        // draw();
-        XSetForeground(disp, DefaultGC(disp, screen), _rgb(255, 1, 127));
-        XDrawPoint(disp, win, DefaultGC(disp, screen), 5, 5);
+        lfrom_y += 1;
+        lookfrom = vec3(lfrom_x, lfrom_y, lfrom_z);
+        set_cam(lookfrom, lookat, vup, vfov, a_ratio, &cam);
+        draw(cam);
+      }
+      if (event.xkey.keycode == A_KEY) {
+        lfrom_x -= 1;
+        lookfrom = vec3(lfrom_x, lfrom_y, lfrom_z);
+        set_cam(lookfrom, lookat, vup, vfov, a_ratio, &cam);
+        draw(cam);
+      }
+      if (event.xkey.keycode == S_KEY) {
+        lfrom_y -= 1;
+        lookfrom = vec3(lfrom_x, lfrom_y, lfrom_z);
+        set_cam(lookfrom, lookat, vup, vfov, a_ratio, &cam);
+        draw(cam);
+      }
+      if (event.xkey.keycode == D_KEY) {
+        lfrom_x += 1;
+        lookfrom = vec3(lfrom_x, lfrom_y, lfrom_z);
+        set_cam(lookfrom, lookat, vup, vfov, a_ratio, &cam);
+        draw(cam);
+      }
+      if (event.xkey.keycode == Z_KEY) {
+        lfrom_y -= 1;
+        lookfrom = vec3(-2, 2, lfrom_y);
+        set_cam(lookfrom, lookat, vup, vfov, a_ratio, &cam);
+        draw(cam);
+      }
+      if (event.xkey.keycode == X_KEY) {
+        lfrom_y += 1;
+        lookfrom = vec3(-2, 2, lfrom_y);
+        set_cam(lookfrom, lookat, vup, vfov, a_ratio, &cam);
+        draw(cam);
       }
 
       if (event.xkey.keycode == Q_KEY) {
