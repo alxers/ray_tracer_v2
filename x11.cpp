@@ -228,16 +228,17 @@ int main(void) {
       }
       if (event.xkey.keycode == Z_KEY) {
         lfrom_y -= 1;
-        lookfrom = vec3(-2, 2, lfrom_y);
+        lookfrom = vec3(lfrom_x, lfrom_y, lfrom_z);
         set_cam(lookfrom, lookat, vup, vfov, a_ratio, &cam);
         draw(cam);
       }
       if (event.xkey.keycode == X_KEY) {
         lfrom_y += 1;
-        lookfrom = vec3(-2, 2, lfrom_y);
+        lookfrom = vec3(lfrom_x, lfrom_y, lfrom_z);
         set_cam(lookfrom, lookat, vup, vfov, a_ratio, &cam);
         draw(cam);
       }
+      printf("%d %d %d\n", lfrom_x, lfrom_y, lfrom_z);
 
       if (event.xkey.keycode == Q_KEY) {
         break;
