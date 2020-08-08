@@ -10,6 +10,10 @@ struct sphere
   struct material mat;
 };
 
+// sphere bounding box
+// struct sphere sp;
+// aabb(sp.center - vec3(sp.radius, sp.radius, sp.radius), sp.center + vec3(sp.radius, sp.radius, sp.radius));
+
 float hit_sphere(struct sphere *s, const ray& r, float t_min, float t_max, hit_record *rec) {
   vec3 oc = r.origin() - s->center;
   vec3 r_dir = r.direction();
@@ -37,6 +41,12 @@ float hit_sphere(struct sphere *s, const ray& r, float t_min, float t_max, hit_r
   }
 
   return false;
+}
+
+bool sphere_bounding_box(struct sphere *s, struct aabb *output_box) {
+  *output_box.vmin(s->center - vec3(s->radius, s->radius, s->radius));
+  *output_box.vmax(s->center + vec3(s->radius, s->radius, s->radius));
+  return true;
 }
 
 #endif

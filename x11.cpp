@@ -27,6 +27,7 @@
 
 #include "ray.h"
 #include "hittable.h"
+#include "box.h"
 #include "sphere.h"
 #include "camera.h"
 
