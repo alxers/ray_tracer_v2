@@ -44,8 +44,10 @@ float hit_sphere(struct sphere *s, const ray& r, float t_min, float t_max, hit_r
 }
 
 bool sphere_bounding_box(struct sphere *s, struct aabb *output_box) {
-  *output_box.vmin(s->center - vec3(s->radius, s->radius, s->radius));
-  *output_box.vmax(s->center + vec3(s->radius, s->radius, s->radius));
+  vec3 vmin = vec3(s->center - vec3(s->radius, s->radius, s->radius));
+  vec3 vmax = vec3(s->center + vec3(s->radius, s->radius, s->radius));
+  output_box->vmin = vmin;
+  output_box->vmax = vmax;
   return true;
 }
 

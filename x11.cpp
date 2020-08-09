@@ -43,6 +43,11 @@ float random_num() {
   return 0;
 }
 
+// struct world {
+//   struct spheres *sp[];
+//   struct boxes *aabb[];
+// };
+
 // Ray helper functions
 
 
