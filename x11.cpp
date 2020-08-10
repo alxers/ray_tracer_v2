@@ -43,15 +43,15 @@ float random_num() {
   return 0;
 }
 
-// struct world {
-//   struct spheres *sp[];
-//   struct boxes *aabb[];
-// };
+struct world {
+  struct sphere spheres[4];
+  struct aabb boxes[1];
+};
 
 // Ray helper functions
 
 
-vec3 color(ray& r, struct sphere *spheres, size_t arr_size, int depth) {
+vec3 color(ray& r, struct world *scene, size_t arr_size, int depth) {
   hit_record rec;
   hit_record temp_rec;
   float t_min = 0.0;
@@ -66,11 +66,20 @@ vec3 color(ray& r, struct sphere *spheres, size_t arr_size, int depth) {
   bool hit_anything = false;
   double closest_so_far = t_max;
   for (int i = 0; i < arr_size; i++) {
-    if (hit_sphere(&spheres[i], r, t_min, closest_so_far, &temp_rec)) {
-      hit_anything = true;
-      closest_so_far = temp_rec.t;
-      rec = temp_rec;
-      mat = spheres[i].mat;
+    if (i <= 3) {
+      if (hit_sphere(&scene->spheres[i], r, t_min, closest_so_far, &temp_rec)) {
+        hit_anything = true;
+        closest_so_far = temp_rec.t;
+        rec = temp_rec;
+        mat = scene->spheres[i].mat;
+      }
+    } else {
+      if (aabb_hit(&r, t_min, closest_so_far, &scene->boxes[0])) {
+        hit_anything = true;
+        closest_so_far = temp_rec.t;
+        rec = temp_rec;
+        mat = { 1, vec3(0.8, 0.3, 0.3) };
+      }
     }
   }
 
@@ -79,13 +88,13 @@ vec3 color(ray& r, struct sphere *spheres, size_t arr_size, int depth) {
     vec3 attenuation;
     if (mat.type == 1) {
       if (lambertian_scatter(&r, &rec, &attenuation, &scattered, &mat)) {
-        return attenuation * color(scattered, spheres, arr_size, depth - 1);
+        return attenuation * color(scattered, scene, arr_size, depth - 1);
       } else {
         return vec3(0, 0, 0);
       }
     } else if (mat.type == 2) {
       if (metal_scatter(&r, &rec, &attenuation, &scattered, &mat)) {
-        return attenuation * color(scattered, spheres, arr_size, depth - 1);
+        return attenuation * color(scattered, scene, arr_size, depth - 1);
       } else {
         return vec3(0, 0, 0);
       }
@@ -124,7 +133,21 @@ void draw(struct camera cam) {
   struct sphere sp4 = { vec3(-1, 0, -1), 0.5, mat4 };
 
   struct sphere spheres[] = { sp1, sp2, sp3, sp4 };
-  size_t arr_size = 4;
+  size_t spheres_size = 4;
+
+  struct aabb b1 = { vec3(-0.5, -0.5, -1.0), vec3(0.5, 0.5, -2.5) };
+  // struct aabb boxes[] = { b1 };
+
+  // Create scene with geometry objects
+  struct world scene;
+  scene.spheres[0] = sp1;
+  scene.spheres[1] = sp2;
+  scene.spheres[2] = sp3;
+  scene.spheres[3] = sp4;
+  scene.boxes[0] = b1;
+
+  size_t scene_size = 5;
+
 
   for (int j = w_height - 1; j >= 0; --j) {
     for (int i = 0; i < w_width; ++i) {
@@ -137,7 +160,7 @@ void draw(struct camera cam) {
           float u = float(i + drand48()) / float(w_width - 1);
           float v = float(j + drand48()) / float(w_height - 1);
           ray r = get_ray(u, v, cam);
-          col += color(r, spheres, arr_size, max_depth);
+          col += color(r, &scene, scene_size, max_depth);
         }
 
         col /= float(samples_per_pixel);
@@ -146,7 +169,7 @@ void draw(struct camera cam) {
         float v = float(j) / float(w_height - 1);
 
         ray r = get_ray(u, v, cam);
-        col = color(r, spheres, arr_size, max_depth);
+        col = color(r, &scene, scene_size, max_depth);
         // Compensate gamma correctness?
         col = vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
       }
