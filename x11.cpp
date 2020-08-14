@@ -67,21 +67,22 @@ vec3 color(ray& r, struct world *scene, int depth) {
 
   bool hit_anything = false;
   double closest_so_far = t_max;
-  for (int i = 0; i < scene->total_count; i++) {
-    if (i < scene->spheres_count) {
-      if (hit_sphere(&scene->spheres[i], r, t_min, closest_so_far, &temp_rec)) {
-        hit_anything = true;
-        closest_so_far = temp_rec.t;
-        rec = temp_rec;
-        mat = scene->spheres[i].mat;
-      }
-    } else {
-      if (aabb_hit(&r, t_min, closest_so_far, &scene->boxes[0])) {
-        hit_anything = true;
-        closest_so_far = temp_rec.t;
-        rec = temp_rec;
-        mat = { 1, vec3(0.8, 0.3, 0.3) };
-      }
+
+  for (int i = 0; i < scene->spheres_count; i++) {
+    if (hit_sphere(&scene->spheres[i], r, t_min, closest_so_far, &temp_rec)) {
+      hit_anything = true;
+      closest_so_far = temp_rec.t;
+      rec = temp_rec;
+      mat = scene->spheres[i].mat;
+    }
+  }
+
+  for (int i = 0; i < scene->boxes_count; i++) {
+    if (aabb_hit(&r, t_min, closest_so_far, &scene->boxes[i])) {
+      hit_anything = true;
+      closest_so_far = temp_rec.t;
+      rec = temp_rec;
+      mat = { 2, vec3(0.8, 0.3, 0.3) };
     }
   }
 
