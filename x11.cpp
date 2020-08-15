@@ -65,12 +65,13 @@ vec3 color(ray& r, struct world *scene, int depth) {
     return vec3(0, 0, 0);
   }
 
-  bool hit_anything = false;
+  int hit_object;
   double closest_so_far = t_max;
+  vec3 box_norm;
 
   for (int i = 0; i < scene->spheres_count; i++) {
     if (hit_sphere(&scene->spheres[i], r, t_min, closest_so_far, &temp_rec)) {
-      hit_anything = true;
+      hit_object = 1;
       closest_so_far = temp_rec.t;
       rec = temp_rec;
       mat = scene->spheres[i].mat;
@@ -79,28 +80,23 @@ vec3 color(ray& r, struct world *scene, int depth) {
 
   for (int i = 0; i < scene->boxes_count; i++) {
     if (aabb_hit(&r, t_min, closest_so_far, &scene->boxes[i])) {
-      hit_anything = true;
+      hit_object = 2;
       closest_so_far = temp_rec.t;
       rec = temp_rec;
+      box_norm = box_normal(&scene->boxes[i], r.direction());
       mat = { 2, vec3(0.8, 0.3, 0.3) };
     }
   }
 
-  if (hit_anything) {
+  if (hit_object == 1 || hit_object == 2) {
     ray scattered;
     vec3 attenuation;
-    if (mat.type == 1) {
-      if (lambertian_scatter(&r, &rec, &attenuation, &scattered, &mat)) {
-        return attenuation * color(scattered, scene, depth - 1);
-      } else {
-        return vec3(0, 0, 0);
-      }
-    } else if (mat.type == 2) {
-      if (metal_scatter(&r, &rec, &attenuation, &scattered, &mat)) {
-        return attenuation * color(scattered, scene, depth - 1);
-      } else {
-        return vec3(0, 0, 0);
-      }
+    if (hit_object == 1 && mat.type == 1 && lambertian_scatter(&r, &rec, &attenuation, &scattered, &mat)) {
+      return attenuation * color(scattered, scene, depth - 1);
+    } else if (hit_object == 1 && mat.type == 2 && metal_scatter(&r, &rec, &attenuation, &scattered, &mat)) {
+      return attenuation * color(scattered, scene, depth - 1);
+    } else if (hit_object == 2) {
+      return 0.5 * vec3(box_norm.x()+1, box_norm.y()+1, box_norm.z()+1);
     } else {
       return vec3(0, 0, 0);
     }
