@@ -19,3 +19,8 @@ step (s)
 
 Can also print expressions (and functions, f.e. p foo(1))
 call foo(1)
+
+Debug included files:
+(gdb) b box.h:42
+Breakpoint 1 at 0x16b9: file box.h, line 43.
+

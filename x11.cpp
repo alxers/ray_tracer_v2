@@ -53,7 +53,7 @@ struct world {
 
 // Ray helper functions
 
-vec3 color(ray& r, struct world *scene, int depth) {
+vec3 color(ray *r, struct world *scene, int depth) {
   hit_record rec;
   hit_record temp_rec;
   float t_min = 0.0;
@@ -79,11 +79,12 @@ vec3 color(ray& r, struct world *scene, int depth) {
   }
 
   for (int i = 0; i < scene->boxes_count; i++) {
-    if (aabb_hit(&r, t_min, closest_so_far, &scene->boxes[i])) {
+    if (aabb_hit(r, t_min, closest_so_far, &scene->boxes[i])) {
       hit_object = 2;
       closest_so_far = temp_rec.t;
       rec = temp_rec;
-      box_norm = box_normal(&scene->boxes[i], r.direction());
+      box_norm = box_normal(&scene->boxes[i], r->direction());
+      printf("%.6f %.6f %.6f\n", box_norm.x(), box_norm.y(), box_norm.z());
       mat = { 2, vec3(0.8, 0.3, 0.3) };
     }
   }
@@ -91,17 +92,17 @@ vec3 color(ray& r, struct world *scene, int depth) {
   if (hit_object == 1 || hit_object == 2) {
     ray scattered;
     vec3 attenuation;
-    if (hit_object == 1 && mat.type == 1 && lambertian_scatter(&r, &rec, &attenuation, &scattered, &mat)) {
-      return attenuation * color(scattered, scene, depth - 1);
-    } else if (hit_object == 1 && mat.type == 2 && metal_scatter(&r, &rec, &attenuation, &scattered, &mat)) {
-      return attenuation * color(scattered, scene, depth - 1);
+    if (hit_object == 1 && mat.type == 1 && lambertian_scatter(r, &rec, &attenuation, &scattered, &mat)) {
+      return attenuation * color(&scattered, scene, depth - 1);
+    } else if (hit_object == 1 && mat.type == 2 && metal_scatter(r, &rec, &attenuation, &scattered, &mat)) {
+      return attenuation * color(&scattered, scene, depth - 1);
     } else if (hit_object == 2) {
       return 0.5 * vec3(box_norm.x()+1, box_norm.y()+1, box_norm.z()+1);
     } else {
       return vec3(0, 0, 0);
     }
   } else {
-    vec3 unit_direction = unit_vector(r.direction());
+    vec3 unit_direction = unit_vector(r->direction());
     float t = 0.5*(unit_direction.y() + 1.0);
     return (1.0-t)*vec3(1.0, 1.0, 1.0) + t*vec3(0.5, 0.7, 1.0);
   }
@@ -156,7 +157,7 @@ void draw(struct camera cam) {
           float u = float(i + drand48()) / float(w_width - 1);
           float v = float(j + drand48()) / float(w_height - 1);
           ray r = get_ray(u, v, cam);
-          col += color(r, &scene, max_depth);
+          col += color(&r, &scene, max_depth);
         }
 
         col /= float(samples_per_pixel);
@@ -165,7 +166,7 @@ void draw(struct camera cam) {
         float v = float(j) / float(w_height - 1);
 
         ray r = get_ray(u, v, cam);
-        col = color(r, &scene, max_depth);
+        col = color(&r, &scene, max_depth);
         // Compensate gamma correctness?
         col = vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
       }

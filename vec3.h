@@ -138,5 +138,9 @@ inline vec3& vec3::operator/=(const float t) {
 }
 
 inline vec3 unit_vector(vec3 v) {
-    return v / v.length();
+    float v_length = v.length();
+    if (v_length == 0) {
+        return vec3(0, 0, 0);
+    }
+    return v / v_length;
 }

@@ -51,7 +51,7 @@ vec3 box_normal(aabb *box, vec3 hit) {
     float dy = abs(box->vmin.y() - box->vmax.y())/2;
     float dz = abs(box->vmin.z() - box->vmax.z())/2;
 
-    vec3 n(
+    vec3 n = vec3(
         (int) p.x()/dx,
         (int) p.y()/dy,
         (int) p.z()/dx
