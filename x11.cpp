@@ -83,8 +83,8 @@ vec3 color(ray *r, struct world *scene, int depth) {
       hit_object = 2;
       closest_so_far = temp_rec.t;
       rec = temp_rec;
-      box_norm = box_normal(&scene->boxes[i], r->direction());
-      printf("%.6f %.6f %.6f\n", box_norm.x(), box_norm.y(), box_norm.z());
+      // box_norm = box_normal(&scene->boxes[i], r->direction());
+      // printf("%.6f %.6f %.6f\n", box_norm.x(), box_norm.y(), box_norm.z());
       mat = { 2, vec3(0.8, 0.3, 0.3) };
     }
   }
@@ -97,7 +97,7 @@ vec3 color(ray *r, struct world *scene, int depth) {
     } else if (hit_object == 1 && mat.type == 2 && metal_scatter(r, &rec, &attenuation, &scattered, &mat)) {
       return attenuation * color(&scattered, scene, depth - 1);
     } else if (hit_object == 2) {
-      return 0.5 * vec3(box_norm.x()+1, box_norm.y()+1, box_norm.z()+1);
+      return box_norm;
     } else {
       return vec3(0, 0, 0);
     }

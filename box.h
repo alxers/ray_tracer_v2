@@ -38,26 +38,35 @@ bool aabb_hit(ray *r, float tmin, float tmax, struct aabb *box) {
   return true;
 }
 
-vec3 box_normal(aabb *box, vec3 hit) {
-    vec3 centerPoint(
-        (box->vmin.x() + box->vmax.x()) * 0.5,
-        (box->vmin.y() + box->vmax.y()) * 0.5,
-        (box->vmin.z() + box->vmax.z()) * 0.5
-    );
+struct xz_rect
+{
+  float x0;
+  float x1;
+  float z0;
+  float z1;
+  float k;
+};
 
-    vec3 p = hit - centerPoint;
+struct xy_rect
+{
+  float x0;
+  float x1;
+  float y0;
+  float y1;
+  float k;
+};
 
-    float dx = abs(box->vmin.x() - box->vmax.x())/2;
-    float dy = abs(box->vmin.y() - box->vmax.y())/2;
-    float dz = abs(box->vmin.z() - box->vmax.z())/2;
+struct yz_rect
+{
+  float y0;
+  float y1;
+  float z0;
+  float z1;
+  float k;
+};
 
-    vec3 n = vec3(
-        (int) p.x()/dx,
-        (int) p.y()/dy,
-        (int) p.z()/dx
-    );
-
-    return unit_vector(n);
+bool xz_hit(ray *r, float t0, float t1, hit_record *rec) {
+  return true;
 }
 
 #endif

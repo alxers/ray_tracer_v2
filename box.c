@@ -50,26 +50,50 @@ bool intersect(const ray &r)
 } 
 
 // Calculate normal for the cube
-vec3 normal(box3 box, vec3 hit) {
+vec3 box_normal(aabb *box, vec3 hit) {
     vec3 centerPoint(
-        (box.vmin.x() + box.vmax.x()) * 0.5,
-        (box.vmin.y() + box.vmax.y()) * 0.5,
-        (box.vmin.z() + box.vmax.z()) * 0.5
+        (box->vmin.x() + box->vmax.x()) * 0.5,
+        (box->vmin.y() + box->vmax.y()) * 0.5,
+        (box->vmin.z() + box->vmax.z()) * 0.5
     );
 
     vec3 p = hit - centerPoint;
 
-    float dx = abs(box.vmin.x() - box.vmax.x())/2;
-    float dy = abs(box.vmin.y() - box.vmax.y())/2;
-    float dz = abs(box.vmin.z() - box.vmax.z())/2;
+    float dx = abs(box->vmin.x() - box->vmax.x())/2;
+    float dy = abs(box->vmin.y() - box->vmax.y())/2;
+    float dz = abs(box->vmin.z() - box->vmax.z())/2;
 
-    vec3 n(
-        (int) p.x()/dx,
-        (int) p.y()/dy,
-        (int) p.z()/dx
+    // float bias = 1.000001;
+
+    vec3 n = vec3(
+      (int)(p.x()/fabs(dx)),
+      (int)(p.y()/fabs(dy)),
+      (int)(p.z()/fabs(dz))
     );
 
-    return unit_vector(n);
+  // vec3 c = (box->vmin + box->vmax) * 0.5;
+  // vec3 p = hit - c;
+  // vec3 d = (box->vmin - box->vmax) * 0.5;
+  // float bias = 1.000001;
+  // vec3 n;
+  // int one = p.x() / fabs(d.x());
+  // int two = p.y() / fabs(d.y());
+  // int three = p.z() / fabs(d.z());
+
+  // n = vec3((float)one, (float)two, (float)three);
+
+  // vec3 u = unit_vector(n);
+
+  // if (n.x() < 1.0 && n.x() > 0.0) {
+  //   1+1;
+  //   return n;
+  // }
+
+  printf("%.6f %.6f %.6f\n", n.x(), n.y(), n.z());
+
+
+  return unit_vector(n);
+  // return u;
 }
 
 // vec3 color(const ray& r) {
