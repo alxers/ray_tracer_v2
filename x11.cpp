@@ -137,6 +137,8 @@ void draw(struct camera cam) {
   struct aabb b1 = { vec3(-0.5, -0.5, -1.0), vec3(0.5, 0.5, -2.5) };
   struct aabb boxes[] = { b1 };
 
+  // struct xy_rect xy = { 0, 555, 0, 555, 555 };
+
   // Create scene with geometry objects
   struct world scene;
   scene.spheres = spheres;

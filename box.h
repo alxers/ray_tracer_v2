@@ -65,7 +65,27 @@ struct yz_rect
   float k;
 };
 
-bool xz_hit(ray *r, float t0, float t1, hit_record *rec) {
+bool xy_hit(ray *r, float t0, float t1, hit_record *rec, struct *xz_rect) {
+  vec3 ray_origin = r->origin();
+  vec3 ray_direction = r->direction();
+  float t = (xy_rect->k - ray_origin->z()) / ray_direction->z();
+
+  if (t < xy_rect->t0 || t > xy_rect->t1) {
+    return false;
+  }
+
+  float x = ray_origin->x() + t * ray_direction->x();
+  float y = ray_origin->y() + t * ray_direction->y();
+
+  if (x < xy_rect->x0 || x > xy_rect->x1 || y < xy_rect->y0 || y > xy_rect->y1) {
+    return false
+  }
+
+  rec->u = (x - x0) / (x1 - x0);
+  rec->v = (y - y0) / (y1 - y0);
+  rec->t = t;
+  rec->p = r->point_at_parameter(t);
+  rec->normal = vec3(0, 0, 1);
   return true;
 }
 
