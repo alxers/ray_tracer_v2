@@ -19,6 +19,9 @@
 
 #define M_PI 3.1415926535
 
+#define SPHERE_OBJ 1
+#define BOX_OBJ 2
+
 #include <X11/Xlib.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -89,14 +92,14 @@ vec3 color(ray *r, struct world *scene, int depth) {
     }
   }
 
-  if (hit_object == 1 || hit_object == 2) {
+  if (hit_object == SPHERE_OBJ || hit_object == BOX_OBJ) {
     ray scattered;
     vec3 attenuation;
-    if (hit_object == 1 && mat.type == 1 && lambertian_scatter(r, &rec, &attenuation, &scattered, &mat)) {
+    if (hit_object == SPHERE_OBJ && mat.type == 1 && lambertian_scatter(r, &rec, &attenuation, &scattered, &mat)) {
       return attenuation * color(&scattered, scene, depth - 1);
-    } else if (hit_object == 1 && mat.type == 2 && metal_scatter(r, &rec, &attenuation, &scattered, &mat)) {
+    } else if (hit_object == SPHERE_OBJ && mat.type == 2 && metal_scatter(r, &rec, &attenuation, &scattered, &mat)) {
       return attenuation * color(&scattered, scene, depth - 1);
-    } else if (hit_object == 2) {
+    } else if (hit_object == BOX_OBJ) {
       return box_norm;
     } else {
       return vec3(0, 0, 0);
