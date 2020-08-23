@@ -100,7 +100,9 @@ vec3 color(ray *r, struct world *scene, int depth) {
     } else if (hit_object == SPHERE_OBJ && mat.type == 2 && metal_scatter(r, &rec, &attenuation, &scattered, &mat)) {
       return attenuation * color(&scattered, scene, depth - 1);
     } else if (hit_object == BOX_OBJ) {
-      return box_norm;
+      printf("%.6f %.6f %.6f\n", box_norm.x(), box_norm.y(), box_norm.z());
+      // return box_norm;
+      return vec3(0, 0, 0);
     } else {
       return vec3(0, 0, 0);
     }

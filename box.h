@@ -15,6 +15,8 @@ float max(float a, float b) {
   return b;
 }
 
+// Keep aabb and box separate
+// aabb is going to be used for BVH
 struct aabb
 {
   // min and max bounds
@@ -68,7 +70,7 @@ struct yz_rect
 bool xy_hit(ray *r, float t0, float t1, hit_record *rec, struct xy_rect *xy) {
   vec3 ray_origin = r->origin();
   vec3 ray_direction = r->direction();
-  float t = (xy->k - ray_origin.z()) / ray_direction->z();
+  float t = (xy->k - ray_origin.z()) / ray_direction.z();
 
   if (t < t0 || t > t1) {
     return false;
@@ -81,12 +83,32 @@ bool xy_hit(ray *r, float t0, float t1, hit_record *rec, struct xy_rect *xy) {
     return false;
   }
 
-  rec->u = (x - x0) / (x1 - x0);
-  rec->v = (y - y0) / (y1 - y0);
+  // rec->u = (x - x0) / (x1 - x0);
+  // rec->v = (y - y0) / (y1 - y0);
   rec->t = t;
   rec->p = r->point_at_parameter(t);
   rec->normal = vec3(0, 0, 1);
   return true;
 }
+
+
+
+// Gives wrong result? Or just coloring function should be different
+// for the box?
+// vec3 box_normal(aabb *box, vec3 hit) {
+//   vec3 c = (box->vmin + box->vmax) * 0.5;
+//   vec3 p = hit - c;
+//   vec3 d = (box->vmin - box->vmax) * 0.5;
+//   float bias = 1.000001;
+//   vec3 n;
+//   int one = p.x() / fabs(d.x());
+//   int two = p.y() / fabs(d.y());
+//   int three = p.z() / fabs(d.z());
+
+//   n = vec3((float)one, (float)two, (float)three);
+
+//   vec3 u = unit_vector(n);
+//   return u;
+// }
 
 #endif
