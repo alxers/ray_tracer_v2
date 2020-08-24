@@ -49,9 +49,9 @@ float random_num() {
 struct world {
   int spheres_count;
   int boxes_count;
-  int total_count;
   struct sphere *spheres;
-  struct aabb *boxes;
+  // struct aabb *boxes;
+  struct box *boxes;
 };
 
 // Ray helper functions
@@ -81,8 +81,19 @@ vec3 color(ray *r, struct world *scene, int depth) {
     }
   }
 
+  // for (int i = 0; i < scene->boxes_count; i++) {
+  //   if (aabb_hit(r, t_min, closest_so_far, &scene->boxes[i])) {
+  //     hit_object = 2;
+  //     closest_so_far = temp_rec.t;
+  //     rec = temp_rec;
+  //     // box_norm = box_normal(&scene->boxes[i], r->direction());
+  //     // printf("%.6f %.6f %.6f\n", box_norm.x(), box_norm.y(), box_norm.z());
+  //     mat = { 2, vec3(0.8, 0.3, 0.3) };
+  //   }
+  // }
   for (int i = 0; i < scene->boxes_count; i++) {
-    if (aabb_hit(r, t_min, closest_so_far, &scene->boxes[i])) {
+    struct box curr_box = scene->boxes[i];
+    if (box_hit(r, t_min, closest_so_far, &temp_rec, &curr_box.xy, &curr_box.xz, &curr_box.yz)) {
       hit_object = 2;
       closest_so_far = temp_rec.t;
       rec = temp_rec;
@@ -139,10 +150,22 @@ void draw(struct camera cam) {
 
   struct sphere spheres[] = { sp1, sp2, sp3, sp4 };
 
-  struct aabb b1 = { vec3(-0.5, -0.5, -1.0), vec3(0.5, 0.5, -2.5) };
-  struct aabb boxes[] = { b1 };
+  // struct aabb b1 = { vec3(-0.5, -0.5, -1.0), vec3(0.5, 0.5, -2.5) };
+  // struct aabb boxes[] = { b1 };
 
-  // struct xy_rect xy = { 0, 555, 0, 555, 555 };
+  struct xy_rect xy = { 0, 555, 0, 555, 555 };
+  struct xz_rect xz = { 0, 555, 0, 555, 555 };
+  struct yz_rect yz = { 0, 555, 0, 555, 555 };
+
+  struct box b2 = {
+    vec3(0.5, 0.5, 1.0),
+    vec3(1.5, 1.5, 2.0),
+    xy,
+    xz,
+    yz
+  };
+
+  struct box boxes[] = { b2 };
 
   // Create scene with geometry objects
   struct world scene;
@@ -150,7 +173,6 @@ void draw(struct camera cam) {
   scene.spheres_count = 4;
   scene.boxes = boxes;
   scene.boxes_count = 1;
-  scene.total_count = scene.spheres_count + scene.boxes_count;
 
 
   for (int j = w_height - 1; j >= 0; --j) {

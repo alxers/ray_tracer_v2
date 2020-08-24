@@ -67,6 +67,15 @@ struct yz_rect
   float k;
 };
 
+struct box
+{
+  vec3 vmin;
+  vec3 vmax;
+  struct xy_rect xy;
+  struct xz_rect xz;
+  struct yz_rect yz;
+};
+
 bool xy_hit(ray *r, float t0, float t1, hit_record *rec, struct xy_rect *xy) {
   vec3 ray_origin = r->origin();
   vec3 ray_direction = r->direction();
@@ -89,6 +98,71 @@ bool xy_hit(ray *r, float t0, float t1, hit_record *rec, struct xy_rect *xy) {
   rec->p = r->point_at_parameter(t);
   rec->normal = vec3(0, 0, 1);
   return true;
+}
+
+bool xz_hit(ray *r, float t0, float t1, hit_record *rec, struct xz_rect *xz) {
+  vec3 ray_origin = r->origin();
+  vec3 ray_direction = r->direction();
+  float t = (xz->k - ray_origin.y()) / ray_direction.y();
+
+  if (t < t0 || t > t1) {
+    return false;
+  }
+
+  float x = ray_origin.x() + t * ray_direction.x();
+  float z = ray_origin.z() + t * ray_direction.z();
+
+  if (x < xz->x0 || x > xz->x1 || z < xz->z0 || z > xz->z1) {
+    return false;
+  }
+
+  // rec->u = (x - x0) / (x1 - x0);
+  // rec->v = (y - y0) / (y1 - y0);
+  rec->t = t;
+  rec->p = r->point_at_parameter(t);
+  rec->normal = vec3(0, 1, 0);
+  return true;
+}
+
+bool yz_hit(ray *r, float t0, float t1, hit_record *rec, struct yz_rect *yz) {
+  vec3 ray_origin = r->origin();
+  vec3 ray_direction = r->direction();
+  float t = (yz->k - ray_origin.x()) / ray_direction.x();
+
+  if (t < t0 || t > t1) {
+    return false;
+  }
+
+  float y = ray_origin.y() + t * ray_direction.y();
+  float z = ray_origin.z() + t * ray_direction.z();
+
+  if (y < yz->y0 || y > yz->y1 || z < yz->z0 || z > yz->z1) {
+    return false;
+  }
+
+  // rec->u = (x - x0) / (x1 - x0);
+  // rec->v = (y - y0) / (y1 - y0);
+  rec->t = t;
+  rec->p = r->point_at_parameter(t);
+  rec->normal = vec3(1, 0, 0);
+  return true;
+}
+
+bool box_hit(
+    ray *r,
+    float t0,
+    float t1,
+    hit_record *rec,
+    struct xy_rect *xy,
+    struct xz_rect *xz,
+    struct yz_rect *yz
+  ) {
+
+  return (
+    xy_hit(r, t0, t1, rec, xy) ||
+    xz_hit(r, t0, t1, rec, xz) ||
+    yz_hit(r, t0, t1, rec, yz) 
+  );
 }
 
 
