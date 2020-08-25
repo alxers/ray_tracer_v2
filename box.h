@@ -76,7 +76,7 @@ struct box
   struct yz_rect yz;
 };
 
-bool xy_hit(ray *r, float t0, float t1, hit_record *rec, struct xy_rect *xy) {
+bool xy_hit(ray *r, float t0, float t1, hit_record *rec, struct xy_rect *xy, bool flip_norm) {
   vec3 ray_origin = r->origin();
   vec3 ray_direction = r->direction();
   float t = (xy->k - ray_origin.z()) / ray_direction.z();
@@ -96,11 +96,15 @@ bool xy_hit(ray *r, float t0, float t1, hit_record *rec, struct xy_rect *xy) {
   // rec->v = (y - y0) / (y1 - y0);
   rec->t = t;
   rec->p = r->point_at_parameter(t);
-  rec->normal = vec3(0, 0, 1);
+  if (flip_norm) {
+    rec->normal = vec3(0, 0, -1);
+  } else {
+    rec->normal = vec3(0, 0, 1);
+  }
   return true;
 }
 
-bool xz_hit(ray *r, float t0, float t1, hit_record *rec, struct xz_rect *xz) {
+bool xz_hit(ray *r, float t0, float t1, hit_record *rec, struct xz_rect *xz, bool flip_norm) {
   vec3 ray_origin = r->origin();
   vec3 ray_direction = r->direction();
   float t = (xz->k - ray_origin.y()) / ray_direction.y();
@@ -120,11 +124,15 @@ bool xz_hit(ray *r, float t0, float t1, hit_record *rec, struct xz_rect *xz) {
   // rec->v = (y - y0) / (y1 - y0);
   rec->t = t;
   rec->p = r->point_at_parameter(t);
-  rec->normal = vec3(0, 1, 0);
+  if (flip_norm) {
+    rec->normal = vec3(0, -1, 0);
+  } else {
+    rec->normal = vec3(0, 1, 0);
+  }
   return true;
 }
 
-bool yz_hit(ray *r, float t0, float t1, hit_record *rec, struct yz_rect *yz) {
+bool yz_hit(ray *r, float t0, float t1, hit_record *rec, struct yz_rect *yz, bool flip_norm) {
   vec3 ray_origin = r->origin();
   vec3 ray_direction = r->direction();
   float t = (yz->k - ray_origin.x()) / ray_direction.x();
@@ -144,7 +152,11 @@ bool yz_hit(ray *r, float t0, float t1, hit_record *rec, struct yz_rect *yz) {
   // rec->v = (y - y0) / (y1 - y0);
   rec->t = t;
   rec->p = r->point_at_parameter(t);
-  rec->normal = vec3(1, 0, 0);
+  if (flip_norm) {
+    rec->normal = vec3(-1, 0, 0);
+  } else {
+    rec->normal = vec3(1, 0, 0);
+  }
   return true;
 }
 
@@ -159,9 +171,13 @@ bool box_hit(
   ) {
 
   return (
-    xy_hit(r, t0, t1, rec, xy) ||
-    xz_hit(r, t0, t1, rec, xz) ||
-    yz_hit(r, t0, t1, rec, yz) 
+    xy_hit(r, t0, t1, rec, xy, false) ||
+    xz_hit(r, t0, t1, rec, xz, false) ||
+    yz_hit(r, t0, t1, rec, yz, false) ||
+
+    xy_hit(r, t0, t1, rec, xy, true) ||
+    xz_hit(r, t0, t1, rec, xz, true) ||
+    yz_hit(r, t0, t1, rec, yz, true)
   );
 }
 

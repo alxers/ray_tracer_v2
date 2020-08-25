@@ -111,9 +111,11 @@ vec3 color(ray *r, struct world *scene, int depth) {
     } else if (hit_object == SPHERE_OBJ && mat.type == 2 && metal_scatter(r, &rec, &attenuation, &scattered, &mat)) {
       return attenuation * color(&scattered, scene, depth - 1);
     } else if (hit_object == BOX_OBJ) {
-      printf("%.6f %.6f %.6f\n", box_norm.x(), box_norm.y(), box_norm.z());
+      // printf("%.6f %.6f %.6f\n", box_norm.x(), box_norm.y(), box_norm.z());
       // return box_norm;
-      return vec3(0, 0, 0);
+      // return vec3(0, 0, 0);
+      printf("%.6f %.6f %.6f\n", rec.normal.x(), rec.normal.y(), rec.normal.z());
+      return rec.normal;
     } else {
       return vec3(0, 0, 0);
     }
@@ -153,13 +155,20 @@ void draw(struct camera cam) {
   // struct aabb b1 = { vec3(-0.5, -0.5, -1.0), vec3(0.5, 0.5, -2.5) };
   // struct aabb boxes[] = { b1 };
 
-  struct xy_rect xy = { 0, 555, 0, 555, 555 };
-  struct xz_rect xz = { 0, 555, 0, 555, 555 };
-  struct yz_rect yz = { 0, 555, 0, 555, 555 };
+  float x0 = -0.5;
+  float y0 = -0.5;
+  float z0 = -1.0;
+  float x1 = 0.5;
+  float y1 = 0.5;
+  float z1 = -2.5;
+
+  struct xy_rect xy = { x0, x1, y0, y1, z0 };
+  struct xz_rect xz = { x0, x1, z0, z1, y0 };
+  struct yz_rect yz = { y0, y1, z0, z1, x0 };
 
   struct box b2 = {
-    vec3(0.5, 0.5, 1.0),
-    vec3(1.5, 1.5, 2.0),
+    vec3(x0, y0, z0),
+    vec3(x1, y1, z1),
     xy,
     xz,
     yz
