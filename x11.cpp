@@ -114,7 +114,7 @@ vec3 color(ray *r, struct world *scene, int depth) {
       // printf("%.6f %.6f %.6f\n", box_norm.x(), box_norm.y(), box_norm.z());
       // return box_norm;
       // return vec3(0, 0, 0);
-      printf("%.6f %.6f %.6f\n", rec.normal.x(), rec.normal.y(), rec.normal.z());
+      // printf("%.6f %.6f %.6f\n", rec.normal.x(), rec.normal.y(), rec.normal.z());
       return rec.normal;
     } else {
       return vec3(0, 0, 0);

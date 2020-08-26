@@ -169,7 +169,7 @@ bool box_hit(
     struct xz_rect *xz,
     struct yz_rect *yz
   ) {
-
+  printf("%.6f %.6f\n", t0, t1);
   return (
     xy_hit(r, t0, t1, rec, xy, false) ||
     xz_hit(r, t0, t1, rec, xz, false) ||
