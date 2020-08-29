@@ -170,14 +170,21 @@ bool box_hit(
     struct yz_rect *yz
   ) {
   // printf("%.6f %.6f\n", t0, t1);
+  bool is_xy_hit = xy_hit(r, t0, t1, rec, xy, false);
+  bool is_xz_hit = xz_hit(r, t0, t1, rec, xz, false);
+  bool is_yz_hit = yz_hit(r, t0, t1, rec, yz, false);
+  bool is_xy_hit_f = xy_hit(r, t0, t1, rec, xy, true);
+  bool is_xz_hit_f = xz_hit(r, t0, t1, rec, xz, true);
+  bool is_yz_hit_f = yz_hit(r, t0, t1, rec, yz, true);
+  printf("xy %d xz %d yz %d %d %d %d\n", is_xy_hit, is_xz_hit, is_yz_hit, is_xy_hit_f, is_xz_hit_f, is_yz_hit_f);
   return (
-    xy_hit(r, t0, t1, rec, xy, false) ||
-    xz_hit(r, t0, t1, rec, xz, false) ||
-    yz_hit(r, t0, t1, rec, yz, false) ||
+    is_xy_hit ||
+    is_xz_hit ||
+    is_yz_hit ||
 
-    xy_hit(r, t0, t1, rec, xy, true) ||
-    xz_hit(r, t0, t1, rec, xz, true) ||
-    yz_hit(r, t0, t1, rec, yz, true)
+    is_xy_hit_f ||
+    is_xz_hit_f ||
+    is_yz_hit_f
   );
 }
 
