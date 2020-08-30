@@ -115,7 +115,7 @@ bool xz_hit(ray *r, float t0, float t1, hit_record *rec, struct xz_rect *xz, boo
 
   float x = ray_origin.x() + t * ray_direction.x();
   float z = ray_origin.z() + t * ray_direction.z();
-
+  printf("x %.06f z %.06f\n", x, z);
   if (x < xz->x0 || x > xz->x1 || z < xz->z0 || z > xz->z1) {
     return false;
   }

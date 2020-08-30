@@ -22,6 +22,10 @@
 #define SPHERE_OBJ 1
 #define BOX_OBJ 2
 
+#define XY 3
+#define XZ 4
+#define YZ 5
+
 #include <X11/Xlib.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -49,6 +53,9 @@ float random_num() {
 struct world {
   int spheres_count;
   int boxes_count;
+  struct xy_rect *xy;
+  struct xz_rect *xz;
+  struct yz_rect *yz;
   struct sphere *spheres;
   // struct aabb *boxes;
   struct box *boxes;
@@ -68,13 +75,13 @@ vec3 color(ray *r, struct world *scene, int depth) {
     return vec3(0, 0, 0);
   }
 
-  int hit_object;
+  int hit_object = 0;
   double closest_so_far = t_max;
   vec3 box_norm;
 
   for (int i = 0; i < scene->spheres_count; i++) {
     if (hit_sphere(&scene->spheres[i], r, t_min, closest_so_far, &temp_rec)) {
-      hit_object = 1;
+      hit_object = SPHERE_OBJ;
       closest_so_far = temp_rec.t;
       rec = temp_rec;
       mat = scene->spheres[i].mat;
@@ -91,40 +98,67 @@ vec3 color(ray *r, struct world *scene, int depth) {
   //     mat = { 2, vec3(0.8, 0.3, 0.3) };
   //   }
   // }
-  for (int i = 0; i < scene->boxes_count; i++) {
-    struct box curr_box = scene->boxes[i];
-    if (box_hit(r, t_min, closest_so_far, &temp_rec, &curr_box.xy, &curr_box.xz, &curr_box.yz)) {
-      hit_object = 2;
+  // for (int i = 0; i < scene->boxes_count; i++) {
+  //   struct box curr_box = scene->boxes[i];
+  //   if (box_hit(r, t_min, closest_so_far, &temp_rec, &curr_box.xy, &curr_box.xz, &curr_box.yz)) {
+  //     hit_object = BOX_OBJ;
+  //     closest_so_far = temp_rec.t;
+  //     rec = temp_rec;
+  //     // box_norm = box_normal(&scene->boxes[i], r->direction());
+  //     // printf("%.6f %.6f %.6f\n", box_norm.x(), box_norm.y(), box_norm.z());
+  //     mat = { 2, vec3(0.8, 0.3, 0.3) };
+  //   }
+  // }
+
+  
+    if (xy_hit(r, t_min, closest_so_far, &temp_rec, scene->xy, false)) {
+      hit_object = XY;
       closest_so_far = temp_rec.t;
       rec = temp_rec;
-      // box_norm = box_normal(&scene->boxes[i], r->direction());
-      // printf("%.6f %.6f %.6f\n", box_norm.x(), box_norm.y(), box_norm.z());
-      mat = { 2, vec3(0.8, 0.3, 0.3) };
     }
-  }
+    if (xz_hit(r, t_min, closest_so_far, &temp_rec, scene->xz, false)) {
+      hit_object = XZ;
+      closest_so_far = temp_rec.t;
+      rec = temp_rec;
+    }
+    if (yz_hit(r, t_min, closest_so_far, &temp_rec, scene->yz, false)) {
+      hit_object = YZ;
+      closest_so_far = temp_rec.t;
+      rec = temp_rec;
+    }
 
-  if (hit_object == SPHERE_OBJ || hit_object == BOX_OBJ) {
+  if (hit_object == SPHERE_OBJ) {
     ray scattered;
     vec3 attenuation;
-    if (hit_object == SPHERE_OBJ && mat.type == 1 && lambertian_scatter(r, &rec, &attenuation, &scattered, &mat)) {
+    if (mat.type == 1 && lambertian_scatter(r, &rec, &attenuation, &scattered, &mat)) {
       return attenuation * color(&scattered, scene, depth - 1);
-    } else if (hit_object == SPHERE_OBJ && mat.type == 2 && metal_scatter(r, &rec, &attenuation, &scattered, &mat)) {
+    } else if (mat.type == 2 && metal_scatter(r, &rec, &attenuation, &scattered, &mat)) {
       return attenuation * color(&scattered, scene, depth - 1);
-    } else if (hit_object == BOX_OBJ) {
+    }
+  } else if (hit_object == BOX_OBJ) {
       // printf("%.6f %.6f %.6f\n", box_norm.x(), box_norm.y(), box_norm.z());
       // return box_norm;
       // return vec3(0, 0, 0);
       printf("%.6f %.6f %.6f\n", rec.normal.x(), rec.normal.y(), rec.normal.z());
       return rec.normal;
-    } else {
-      return vec3(0, 0, 0);
-    }
+  } else if (hit_object == XY){
+      printf("XY %.6f %.6f %.6f\n", rec.normal.x(), rec.normal.y(), rec.normal.z());
+
+      rec.normal;
+  } else if (hit_object == XZ){
+      printf("XZ %.6f %.6f %.6f\n", rec.normal.x(), rec.normal.y(), rec.normal.z());
+
+      rec.normal;
+  } else if (hit_object == YZ){
+      printf("YZ %.6f %.6f %.6f\n", rec.normal.x(), rec.normal.y(), rec.normal.z());
+
+      rec.normal;
   } else {
-    vec3 unit_direction = unit_vector(r->direction());
-    float t = 0.5*(unit_direction.y() + 1.0);
-    return (1.0-t)*vec3(1.0, 1.0, 1.0) + t*vec3(0.5, 0.7, 1.0);
+      vec3 unit_direction = unit_vector(r->direction());
+      float t = 0.5*(unit_direction.y() + 1.0);
+      return (1.0-t)*vec3(1.0, 1.0, 1.0) + t*vec3(0.5, 0.7, 1.0);
+    }
   }
-}
 
 
 int w_width = 400;
@@ -164,7 +198,8 @@ void draw(struct camera cam) {
 
   struct xy_rect xy = { x0, x1, y0, y1, z0 };
   struct xz_rect xz = { x0, x1, z0, z1, y0 };
-  struct yz_rect yz = { y0, y1, z0, z1, x0 };
+  // struct yz_rect yz = { y0, y1, z0, z1, x0 };
+  struct yz_rect yz = { 0, 1, 0, -1, 0 };
 
   struct box b2 = {
     vec3(x0, y0, z0),
@@ -176,12 +211,21 @@ void draw(struct camera cam) {
 
   struct box boxes[] = { b2 };
 
+  struct xy_rect xy1 = { x0, x1, y0, y1, z0 };
+  // struct xz_rect xz1 = { x0, x1, z0, z1, y0 };
+  struct xz_rect xz1 = { 0, 1, -1, 1, 0 };
+  // struct yz_rect yz1 = { y0, y1, z0, z1, x0 };
+  struct yz_rect yz1 = { 0, 3, 0, -3, 0 };
+
   // Create scene with geometry objects
   struct world scene;
   scene.spheres = spheres;
   scene.spheres_count = 4;
   scene.boxes = boxes;
   scene.boxes_count = 1;
+  scene.xy = &xy1;
+  scene.xz = &xz1;
+  scene.yz = &yz1;
 
 
   for (int j = w_height - 1; j >= 0; --j) {
