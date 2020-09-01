@@ -191,15 +191,15 @@ void draw(struct camera cam) {
 
   float x0 = -0.5;
   float y0 = -0.5;
-  float z0 = -1.0;
+  float z0 = -0.5;
   float x1 = 0.5;
   float y1 = 0.5;
-  float z1 = -2.5;
+  float z1 = 0.5;
 
   struct xy_rect xy = { x0, x1, y0, y1, z0 };
   struct xz_rect xz = { x0, x1, z0, z1, y0 };
-  // struct yz_rect yz = { y0, y1, z0, z1, x0 };
-  struct yz_rect yz = { 0, 1, 0, -1, 0 };
+  struct yz_rect yz = { y0, y1, z0, z1, x0 };
+  // struct yz_rect yz = { 0, 1, 0, -1, 0 };
 
   struct box b2 = {
     vec3(x0, y0, z0),
@@ -211,11 +211,11 @@ void draw(struct camera cam) {
 
   struct box boxes[] = { b2 };
 
-  struct xy_rect xy1 = { x0, x1, y0, y1, z0 };
-  // struct xz_rect xz1 = { x0, x1, z0, z1, y0 };
-  struct xz_rect xz1 = { 0, 1, -1, 1, 0 };
-  // struct yz_rect yz1 = { y0, y1, z0, z1, x0 };
-  struct yz_rect yz1 = { 0, 3, 0, -3, 0 };
+  // struct xy_rect xy1 = { x0, x1, y0, y1, z0 };
+  // // struct xz_rect xz1 = { x0, x1, z0, z1, y0 };
+  // struct xz_rect xz1 = { 0, 1, -1, 1, 0 };
+  // // struct yz_rect yz1 = { y0, y1, z0, z1, x0 };
+  // struct yz_rect yz1 =    { 0, 3, 0, -3, 0 };
 
   // Create scene with geometry objects
   struct world scene;
@@ -223,9 +223,9 @@ void draw(struct camera cam) {
   scene.spheres_count = 4;
   scene.boxes = boxes;
   scene.boxes_count = 1;
-  scene.xy = &xy1;
-  scene.xz = &xz1;
-  scene.yz = &yz1;
+  scene.xy = &xy;
+  scene.xz = &xz;
+  scene.yz = &yz;
 
 
   for (int j = w_height - 1; j >= 0; --j) {
