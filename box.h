@@ -115,7 +115,7 @@ bool xz_hit(ray *r, float t0, float t1, hit_record *rec, struct xz_rect *xz, boo
 
   float x = ray_origin.x() + t * ray_direction.x();
   float z = ray_origin.z() + t * ray_direction.z();
-  printf("x %.06f z %.06f\n", x, z);
+  // printf("x %.06f z %.06f\n", x, z);
   if (x < xz->x0 || x > xz->x1 || z < xz->z0 || z > xz->z1) {
     return false;
   }
@@ -173,10 +173,14 @@ bool box_hit(
   bool is_xy_hit = xy_hit(r, t0, t1, rec, xy, false);
   bool is_xz_hit = xz_hit(r, t0, t1, rec, xz, false);
   bool is_yz_hit = yz_hit(r, t0, t1, rec, yz, false);
-  bool is_xy_hit_f = xy_hit(r, t0, t1, rec, xy, true);
-  bool is_xz_hit_f = xz_hit(r, t0, t1, rec, xz, true);
-  bool is_yz_hit_f = yz_hit(r, t0, t1, rec, yz, true);
-  printf("xy %d xz %d yz %d %d %d %d\n", is_xy_hit, is_xz_hit, is_yz_hit, is_xy_hit_f, is_xz_hit_f, is_yz_hit_f);
+  // bool is_xy_hit_f = xy_hit(r, t0, t1, rec, xy, true);
+  // bool is_xz_hit_f = xz_hit(r, t0, t1, rec, xz, true);
+  // bool is_yz_hit_f = yz_hit(r, t0, t1, rec, yz, true);
+
+  bool is_xy_hit_f = xy_hit(r, t0+0.5, t1+0.5, rec, xy, false);
+  bool is_xz_hit_f = xz_hit(r, t0+0.5, t1+0.5, rec, xz, false);
+  bool is_yz_hit_f = yz_hit(r, t0+0.5, t1+0.5, rec, yz, false);
+  // printf("xy %d xz %d yz %d xyf%d xzf%d yzf%d\n", is_xy_hit, is_xz_hit, is_yz_hit, is_xy_hit_f, is_xz_hit_f, is_yz_hit_f);
   return (
     is_xy_hit ||
     is_xz_hit ||

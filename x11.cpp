@@ -98,34 +98,34 @@ vec3 color(ray *r, struct world *scene, int depth) {
   //     mat = { 2, vec3(0.8, 0.3, 0.3) };
   //   }
   // }
-  // for (int i = 0; i < scene->boxes_count; i++) {
-  //   struct box curr_box = scene->boxes[i];
-  //   if (box_hit(r, t_min, closest_so_far, &temp_rec, &curr_box.xy, &curr_box.xz, &curr_box.yz)) {
-  //     hit_object = BOX_OBJ;
-  //     closest_so_far = temp_rec.t;
-  //     rec = temp_rec;
-  //     // box_norm = box_normal(&scene->boxes[i], r->direction());
-  //     // printf("%.6f %.6f %.6f\n", box_norm.x(), box_norm.y(), box_norm.z());
-  //     mat = { 2, vec3(0.8, 0.3, 0.3) };
-  //   }
-  // }
+  for (int i = 0; i < scene->boxes_count; i++) {
+    struct box curr_box = scene->boxes[i];
+    if (box_hit(r, t_min, closest_so_far, &temp_rec, &curr_box.xy, &curr_box.xz, &curr_box.yz)) {
+      hit_object = BOX_OBJ;
+      closest_so_far = temp_rec.t;
+      rec = temp_rec;
+      // box_norm = box_normal(&scene->boxes[i], r->direction());
+      // printf("%.6f %.6f %.6f\n", box_norm.x(), box_norm.y(), box_norm.z());
+      mat = { 2, vec3(0.8, 0.3, 0.3) };
+    }
+  }
 
   
-    if (xy_hit(r, t_min, closest_so_far, &temp_rec, scene->xy, false)) {
-      hit_object = XY;
-      closest_so_far = temp_rec.t;
-      rec = temp_rec;
-    }
-    if (xz_hit(r, t_min, closest_so_far, &temp_rec, scene->xz, false)) {
-      hit_object = XZ;
-      closest_so_far = temp_rec.t;
-      rec = temp_rec;
-    }
-    if (yz_hit(r, t_min, closest_so_far, &temp_rec, scene->yz, false)) {
-      hit_object = YZ;
-      closest_so_far = temp_rec.t;
-      rec = temp_rec;
-    }
+    // if (xy_hit(r, t_min, closest_so_far, &temp_rec, scene->xy, false)) {
+    //   hit_object = XY;
+    //   closest_so_far = temp_rec.t;
+    //   rec = temp_rec;
+    // }
+    // if (xz_hit(r, t_min, closest_so_far, &temp_rec, scene->xz, false)) {
+    //   hit_object = XZ;
+    //   closest_so_far = temp_rec.t;
+    //   rec = temp_rec;
+    // }
+    // if (yz_hit(r, t_min, closest_so_far, &temp_rec, scene->yz, false)) {
+    //   hit_object = YZ;
+    //   closest_so_far = temp_rec.t;
+    //   rec = temp_rec;
+    // }
 
   if (hit_object == SPHERE_OBJ) {
     ray scattered;
@@ -136,23 +136,24 @@ vec3 color(ray *r, struct world *scene, int depth) {
       return attenuation * color(&scattered, scene, depth - 1);
     }
   } else if (hit_object == BOX_OBJ) {
-      // printf("%.6f %.6f %.6f\n", box_norm.x(), box_norm.y(), box_norm.z());
-      // return box_norm;
-      // return vec3(0, 0, 0);
-      printf("%.6f %.6f %.6f\n", rec.normal.x(), rec.normal.y(), rec.normal.z());
-      return rec.normal;
-  } else if (hit_object == XY){
-      printf("XY %.6f %.6f %.6f\n", rec.normal.x(), rec.normal.y(), rec.normal.z());
+      // printf("%.6f %.6f %.6f\n", rec.normal.x(), rec.normal.y(), rec.normal.z());
+      float x = fabs(rec.normal.x());
+      float y = fabs(rec.normal.y());
+      float z = fabs(rec.normal.z());
 
-      rec.normal;
-  } else if (hit_object == XZ){
-      printf("XZ %.6f %.6f %.6f\n", rec.normal.x(), rec.normal.y(), rec.normal.z());
+      return vec3(x, y, z);
+  // } else if (hit_object == XY){
+  //     printf("XY %.6f %.6f %.6f\n", rec.normal.x(), rec.normal.y(), rec.normal.z());
 
-      rec.normal;
-  } else if (hit_object == YZ){
-      printf("YZ %.6f %.6f %.6f\n", rec.normal.x(), rec.normal.y(), rec.normal.z());
+  //     rec.normal;
+  // } else if (hit_object == XZ){
+  //     printf("XZ %.6f %.6f %.6f\n", rec.normal.x(), rec.normal.y(), rec.normal.z());
 
-      rec.normal;
+  //     rec.normal;
+  // } else if (hit_object == YZ){
+  //     printf("YZ %.6f %.6f %.6f\n", rec.normal.x(), rec.normal.y(), rec.normal.z());
+
+  //     rec.normal;
   } else {
       vec3 unit_direction = unit_vector(r->direction());
       float t = 0.5*(unit_direction.y() + 1.0);
@@ -223,9 +224,9 @@ void draw(struct camera cam) {
   scene.spheres_count = 4;
   scene.boxes = boxes;
   scene.boxes_count = 1;
-  scene.xy = &xy;
-  scene.xz = &xz;
-  scene.yz = &yz;
+  // scene.xy = &xy;
+  // scene.xz = &xz;
+  // scene.yz = &yz;
 
 
   for (int j = w_height - 1; j >= 0; --j) {
@@ -346,7 +347,7 @@ int main(void) {
         set_cam(lookfrom, lookat, vup, vfov, a_ratio, &cam);
         draw(cam);
       }
-      printf("%d %d %d\n", lfrom_x, lfrom_y, lfrom_z);
+      // printf("%d %d %d\n", lfrom_x, lfrom_y, lfrom_z);
 
       if (event.xkey.keycode == Q_KEY) {
         break;
