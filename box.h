@@ -177,9 +177,9 @@ bool box_hit(
   // bool is_xz_hit_f = xz_hit(r, t0, t1, rec, xz, true);
   // bool is_yz_hit_f = yz_hit(r, t0, t1, rec, yz, true);
 
-  bool is_xy_hit_f = xy_hit(r, t0+0.5, t1+0.5, rec, xy, false);
-  bool is_xz_hit_f = xz_hit(r, t0+0.5, t1+0.5, rec, xz, false);
-  bool is_yz_hit_f = yz_hit(r, t0+0.5, t1+0.5, rec, yz, false);
+  // bool is_xy_hit_f = xy_hit(r, t0+0.5, t1+0.5, rec, xy, false);
+  // bool is_xz_hit_f = xz_hit(r, t0+0.5, t1+0.5, rec, xz, false);
+  // bool is_yz_hit_f = yz_hit(r, t0+0.5, t1+0.5, rec, yz, false);
   // printf("xy %d xz %d yz %d xyf%d xzf%d yzf%d\n", is_xy_hit, is_xz_hit, is_yz_hit, is_xy_hit_f, is_xz_hit_f, is_yz_hit_f);
   return (
     is_xy_hit ||
