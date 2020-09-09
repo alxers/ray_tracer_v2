@@ -77,7 +77,7 @@ vec3 color(ray *r, struct world *scene, int depth) {
 
   int hit_object = 0;
   double closest_so_far = t_max;
-  vec3 box_norm;
+  vec3 box_norm = {};
 
   for (int i = 0; i < scene->spheres_count; i++) {
     if (hit_sphere(&scene->spheres[i], r, t_min, closest_so_far, &temp_rec)) {
@@ -93,7 +93,7 @@ vec3 color(ray *r, struct world *scene, int depth) {
       hit_object = 2;
       closest_so_far = temp_rec.t;
       rec = temp_rec;
-      // box_norm = box_normal(&scene->boxes[i], r->direction());
+      box_norm = box_normal(&scene->boxes[i], r->direction());
       // printf("%.6f %.6f %.6f\n", box_norm.x(), box_norm.y(), box_norm.z());
       mat = { 2, vec3(0.8, 0.3, 0.3) };
     }
@@ -120,11 +120,8 @@ vec3 color(ray *r, struct world *scene, int depth) {
     }
   } else if (hit_object == BOX_OBJ) {
       // printf("%.6f %.6f %.6f\n", rec.normal.x(), rec.normal.y(), rec.normal.z());
-      float x = fabs(rec.normal.x());
-      float y = fabs(rec.normal.y());
-      float z = fabs(rec.normal.z());
 
-      return vec3(x, y, z);
+      return vec3(box_norm.x(), box_norm.y(), box_norm.z());
   } else {
       vec3 unit_direction = unit_vector(r->direction());
       float t = 0.5*(unit_direction.y() + 1.0);

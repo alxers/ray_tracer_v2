@@ -188,11 +188,11 @@ vec3 box_normal(aabb *box, vec3 hit) {
   vec3 d = (box->vmin - box->vmax) * 0.5;
   float bias = 1.000001;
   vec3 n;
-  int one = p.x() / fabs(d.x());
-  int two = p.y() / fabs(d.y());
-  int three = p.z() / fabs(d.z());
+  int one = p.x() / fabs(d.x() * bias);
+  int two = p.y() / fabs(d.y() * bias);
+  int three = p.z() / fabs(d.z() * bias);
 
-  n = vec3((float)one, (float)two, (float)three);
+  n = vec3(one, two, three);
 
   vec3 u = unit_vector(n);
   return u;
