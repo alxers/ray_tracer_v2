@@ -89,6 +89,9 @@ vec3 color(ray *r, struct world *scene, int depth) {
   }
 
   for (int i = 0; i < scene->boxes_count; i++) {
+    // TODO: check why do we enter box_normal when row with box wasn't displayed
+    // b box.h:195
+    // or is it correct, but we enter here because of the box reflection in the sphere?
     if (aabb_hit(r, t_min, closest_so_far, &scene->boxes[i])) {
       hit_object = 2;
       closest_so_far = temp_rec.t;
@@ -155,7 +158,7 @@ void draw(struct camera cam) {
 
   struct sphere spheres[] = { sp1, sp2, sp3, sp4 };
 
-  struct aabb b1 = { vec3(-0.5, -0.5, -1.0), vec3(0.5, 0.5, -2.5) };
+  struct aabb b1 = { vec3(-0.5, -0.5, -0.5), vec3(0.5, 0.5, 0.5) };
   struct aabb boxes[] = { b1 };
 
   // float x0 = -0.5;

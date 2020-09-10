@@ -180,19 +180,19 @@ bool aabb_hit(ray *r, float tmin, float tmax, struct aabb *box) {
 
 
 
-// Gives wrong result? Or just coloring function should be different
-// for the box?
+
 vec3 box_normal(aabb *box, vec3 hit) {
   vec3 c = (box->vmin + box->vmax) * 0.5;
   vec3 p = hit - c;
   vec3 d = (box->vmin - box->vmax) * 0.5;
   float bias = 1.000001;
   vec3 n;
-  int one = p.x() / fabs(d.x() * bias);
-  int two = p.y() / fabs(d.y() * bias);
-  int three = p.z() / fabs(d.z() * bias);
-
-  n = vec3(one, two, three);
+  int one = (int)(p.x() / fabs(d.x()) * bias);
+  int two = (int)(p.y() / fabs(d.y()) * bias);
+  int three = (int)(p.z() / fabs(d.z()) * bias);
+  printf("%d, %d, %d\n", one, two, three);
+  n = vec3((float)one, (float)two, (float)three);
+  // printf("%0.6f, %0.6f, %0.6f\n", n.x(), n.y(), n.z());
 
   vec3 u = unit_vector(n);
   return u;

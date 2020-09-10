@@ -16,6 +16,7 @@ print var (or p)
 bt (for backtrace)     
 next (n)     
 step (s)     
+continue (c)
 
 Can also print expressions (and functions, f.e. p foo(1))
 call foo(1)
