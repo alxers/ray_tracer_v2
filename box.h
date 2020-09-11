@@ -181,21 +181,46 @@ bool aabb_hit(ray *r, float tmin, float tmax, struct aabb *box) {
 
 
 
+// vec3 box_normal(aabb *box, vec3 hit) {
+//   vec3 c = (box->vmin + box->vmax) * 0.5;
+//   vec3 p = hit - c;
+//   vec3 d = (box->vmin - box->vmax) * 0.5;
+//   float bias = 1.000001;
+//   vec3 n;
+//   int one = (int)(p.x() / fabs(d.x()) * bias);
+//   int two = (int)(p.y() / fabs(d.y()) * bias);
+//   int three = (int)(p.z() / fabs(d.z()) * bias);
+//   printf("%d, %d, %d\n", one, two, three);
+//   n = vec3((float)one, (float)two, (float)three);
+//   // printf("%0.6f, %0.6f, %0.6f\n", n.x(), n.y(), n.z());
+
+//   vec3 u = unit_vector(n);
+//   return u;
+// }
+
 vec3 box_normal(aabb *box, vec3 hit) {
   vec3 c = (box->vmin + box->vmax) * 0.5;
   vec3 p = hit - c;
-  vec3 d = (box->vmin - box->vmax) * 0.5;
   float bias = 1.000001;
-  vec3 n;
-  int one = (int)(p.x() / fabs(d.x()) * bias);
-  int two = (int)(p.y() / fabs(d.y()) * bias);
-  int three = (int)(p.z() / fabs(d.z()) * bias);
-  printf("%d, %d, %d\n", one, two, three);
-  n = vec3((float)one, (float)two, (float)three);
-  // printf("%0.6f, %0.6f, %0.6f\n", n.x(), n.y(), n.z());
 
-  vec3 u = unit_vector(n);
-  return u;
+  // This is not ok, one of the coordinate should always be +- 1?
+  // since it's axis aligned box
+  // Maybe it's a problem with camera?
+  float first, second, third;
+  first = fabs((p.x()));
+  second = fabs((p.y()));
+  third = fabs((p.z()));
+  printf("%0.6f, %0.6f, %0.6f\n", first, second, third);
+  //
+
+  int one = (p.x() * bias);
+  int two = (p.y() * bias);
+  int three = (p.z() * bias);
+  // printf("%d, %d, %d\n", one, two, three);
+
+  vec3 n = vec3((float)one, (float)two, (float)three);
+
+  return unit_vector(n);
 }
 
 #endif
