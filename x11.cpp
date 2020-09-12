@@ -158,7 +158,8 @@ void draw(struct camera cam) {
 
   struct sphere spheres[] = { sp1, sp2, sp3, sp4 };
 
-  struct aabb b1 = { vec3(-0.5, -0.5, -0.5), vec3(0.5, 0.5, 0.5) };
+  // struct aabb b1 = { vec3(-0.5, -0.5, -0.5), vec3(0.5, 0.5, 0.5) };
+  struct aabb b1 = { vec3(-1.0, -1.0, -1.0), vec3(1.0, 1.0, 1.0) };
   struct aabb boxes[] = { b1 };
 
   // float x0 = -0.5;
