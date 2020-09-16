@@ -66,6 +66,9 @@ struct world {
 vec3 color(ray *r, struct world *scene, int depth) {
   hit_record rec;
   hit_record temp_rec;
+
+  hit_record rec2;
+  hit_record temp_rec2;
   float t_min = 0.0;
   float t_max = MAXFLOAT;
   struct material mat;
@@ -92,11 +95,11 @@ vec3 color(ray *r, struct world *scene, int depth) {
     // TODO: check why do we enter box_normal when row with box wasn't displayed
     // b box.h:195
     // or is it correct, but we enter here because of the box reflection in the sphere?
-    if (aabb_hit(r, t_min, closest_so_far, &scene->boxes[i])) {
-      hit_object = 2;
-      closest_so_far = temp_rec.t;
-      rec = temp_rec;
-      box_norm = box_normal(&scene->boxes[i], r->direction());
+    if (aabb_hit(r, t_min, closest_so_far, &scene->boxes[i], &temp_rec2)) {
+      hit_object = BOX_OBJ;
+      closest_so_far = temp_rec2.t;
+      rec2 = temp_rec2;
+      box_norm = box_normal(&scene->boxes[i], r->direction(), &rec2);
       // printf("%.6f %.6f %.6f\n", box_norm.x(), box_norm.y(), box_norm.z());
       mat = { 2, vec3(0.8, 0.3, 0.3) };
     }

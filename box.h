@@ -24,7 +24,7 @@ struct aabb
   vec3 vmax;
 };
 
-bool aabb_hit(ray *r, float tmin, float tmax, struct aabb *box) {
+bool aabb_hit(ray *r, float tmin, float tmax, struct aabb *box, hit_record *rec) {
   for (int i = 0; i < 3; i++) {
     float t0 = min((box->vmin[i] - r->origin()[i]) / r->direction()[i],
                    (box->vmax[i] - r->origin()[i]) / r->direction()[i]);
@@ -37,6 +37,8 @@ bool aabb_hit(ray *r, float tmin, float tmax, struct aabb *box) {
       return false;
     }
   }
+  rec->t = tmin;
+  rec->p = r->point_at_parameter(rec->t);
   return true;
 }
 
@@ -181,9 +183,9 @@ bool aabb_hit(ray *r, float tmin, float tmax, struct aabb *box) {
 
 
 
-vec3 box_normal(aabb *box, vec3 hit) {
+vec3 box_normal(aabb *box, vec3 hit, hit_record *rec) {
   vec3 c = (box->vmin + box->vmax) * 0.5;
-  vec3 p = hit - c;
+  vec3 p = rec->p - c;
   // For this method to work with arbitrary aabb (not only a unit cube)
   // we need to compute divisor
   vec3 d = (box->vmin - box->vmax) * 0.5;
@@ -192,7 +194,7 @@ vec3 box_normal(aabb *box, vec3 hit) {
   int one = (int)(p.x() / fabs(d.x()) * bias);
   int two = (int)(p.y() / fabs(d.y()) * bias);
   int three = (int)(p.z() / fabs(d.z()) * bias);
-  printf("%d, %d, %d\n", one, two, three);
+  // printf("%d, %d, %d\n", one, two, three);
   n = vec3((float)one, (float)two, (float)three);
   // printf("%0.6f, %0.6f, %0.6f\n", n.x(), n.y(), n.z());
 
