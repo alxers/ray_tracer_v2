@@ -39,6 +39,18 @@ bool aabb_hit(ray *r, float tmin, float tmax, struct aabb *box, hit_record *rec)
   }
   rec->t = tmin;
   rec->p = r->point_at_parameter(rec->t);
+
+  // For this method to work with arbitrary aabb (not only a unit cube)
+  // we need to compute divisor
+  vec3 d = (box->vmin - box->vmax) * 0.5;
+  float bias = 1.000001;
+  vec3 n;
+  int normX = (int)(rec->p.x() / fabs(d.x()) * bias);
+  int normY = (int)(rec->p.y() / fabs(d.y()) * bias);
+  int normZ = (int)(rec->p.z() / fabs(d.z()) * bias);
+  // printf("%d, %d, %d\n", one, two, three);
+  rec->normal = unit_vector(vec3((float)normX, (float)normY, (float)normZ));
+
   return true;
 }
 
@@ -183,24 +195,24 @@ bool aabb_hit(ray *r, float tmin, float tmax, struct aabb *box, hit_record *rec)
 
 
 
-vec3 box_normal(aabb *box, vec3 hit, hit_record *rec) {
-  vec3 c = (box->vmin + box->vmax) * 0.5;
-  vec3 p = rec->p - c;
-  // For this method to work with arbitrary aabb (not only a unit cube)
-  // we need to compute divisor
-  vec3 d = (box->vmin - box->vmax) * 0.5;
-  float bias = 1.000001;
-  vec3 n;
-  int one = (int)(p.x() / fabs(d.x()) * bias);
-  int two = (int)(p.y() / fabs(d.y()) * bias);
-  int three = (int)(p.z() / fabs(d.z()) * bias);
-  // printf("%d, %d, %d\n", one, two, three);
-  n = vec3((float)one, (float)two, (float)three);
-  // printf("%0.6f, %0.6f, %0.6f\n", n.x(), n.y(), n.z());
+// vec3 box_normal(aabb *box, vec3 hit, hit_record *rec) {
+//   vec3 c = (box->vmin + box->vmax) * 0.5;
+//   vec3 p = rec->p - c;
+//   // For this method to work with arbitrary aabb (not only a unit cube)
+//   // we need to compute divisor
+//   vec3 d = (box->vmin - box->vmax) * 0.5;
+//   float bias = 1.000001;
+//   vec3 n;
+//   int one = (int)(p.x() / fabs(d.x()) * bias);
+//   int two = (int)(p.y() / fabs(d.y()) * bias);
+//   int three = (int)(p.z() / fabs(d.z()) * bias);
+//   printf("%d, %d, %d\n", one, two, three);
+//   n = vec3((float)one, (float)two, (float)three);
+//   // printf("%0.6f, %0.6f, %0.6f\n", n.x(), n.y(), n.z());
 
-  vec3 u = unit_vector(n);
-  return u;
-}
+//   vec3 u = unit_vector(n);
+//   return u;
+// }
 
 // Only for the unit cube
 // vec3 box_normal(aabb *box, vec3 hit) {

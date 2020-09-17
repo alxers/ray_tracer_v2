@@ -99,7 +99,7 @@ vec3 color(ray *r, struct world *scene, int depth) {
       hit_object = BOX_OBJ;
       closest_so_far = temp_rec2.t;
       rec2 = temp_rec2;
-      box_norm = box_normal(&scene->boxes[i], r->direction(), &rec2);
+      // box_norm = box_normal(&scene->boxes[i], r->direction(), &rec2);
       // printf("%.6f %.6f %.6f\n", box_norm.x(), box_norm.y(), box_norm.z());
       mat = { 2, vec3(0.8, 0.3, 0.3) };
     }
@@ -127,7 +127,7 @@ vec3 color(ray *r, struct world *scene, int depth) {
   } else if (hit_object == BOX_OBJ) {
       // printf("%.6f %.6f %.6f\n", rec.normal.x(), rec.normal.y(), rec.normal.z());
 
-      return vec3(box_norm.x(), box_norm.y(), box_norm.z());
+      return vec3(rec2.normal.x(), rec2.normal.y(), rec2.normal.z());
   } else {
       vec3 unit_direction = unit_vector(r->direction());
       float t = 0.5*(unit_direction.y() + 1.0);
@@ -162,7 +162,7 @@ void draw(struct camera cam) {
   struct sphere spheres[] = { sp1, sp2, sp3, sp4 };
 
   // struct aabb b1 = { vec3(-0.5, -0.5, -0.5), vec3(0.5, 0.5, 0.5) };
-  struct aabb b1 = { vec3(-1.0, -1.0, -1.0), vec3(1.0, 1.0, 1.0) };
+  struct aabb b1 = { vec3(-0.5, -0.5, -0.5), vec3(0.5, 0.5, 0.5) };
   struct aabb boxes[] = { b1 };
 
   // float x0 = -0.5;
@@ -253,7 +253,7 @@ int main(void) {
 
   // Ray setup
   struct camera cam;
-
+  // TODO: check if zoom in/out is the same as W/D
   int lfrom_x = -2;
   int lfrom_y = 2;
   int lfrom_z = 1;
