@@ -43,12 +43,12 @@ float hit_sphere(struct sphere *s, ray *r, float t_min, float t_max, hit_record 
   return false;
 }
 
-bool sphere_bounding_box(struct sphere *s, struct aabb *output_box) {
-  vec3 vmin = vec3(s->center - vec3(s->radius, s->radius, s->radius));
-  vec3 vmax = vec3(s->center + vec3(s->radius, s->radius, s->radius));
-  output_box->vmin = vmin;
-  output_box->vmax = vmax;
-  return true;
-}
+// bool sphere_bounding_box(struct sphere *s, struct aabb *output_box) {
+//   vec3 vmin = vec3(s->center - vec3(s->radius, s->radius, s->radius));
+//   vec3 vmax = vec3(s->center + vec3(s->radius, s->radius, s->radius));
+//   output_box->vmin = vmin;
+//   output_box->vmax = vmax;
+//   return true;
+// }
 
 #endif

@@ -44,7 +44,7 @@ bool aabb_hit(ray *r, float tmin, float tmax, struct aabb *box, hit_record *rec)
   // we need to compute divisor
   vec3 d = (box->vmin - box->vmax) * 0.5;
   float bias = 1.000001;
-  vec3 n;
+
   int normX = (int)(rec->p.x() / fabs(d.x()) * bias);
   int normY = (int)(rec->p.y() / fabs(d.y()) * bias);
   int normZ = (int)(rec->p.z() / fabs(d.z()) * bias);

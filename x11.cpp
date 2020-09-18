@@ -125,15 +125,18 @@ vec3 color(ray *r, struct world *scene, int depth) {
       return attenuation * color(&scattered, scene, depth - 1);
     }
   } else if (hit_object == BOX_OBJ) {
-      // printf("%.6f %.6f %.6f\n", rec.normal.x(), rec.normal.y(), rec.normal.z());
-
-      return vec3(rec2.normal.x(), rec2.normal.y(), rec2.normal.z());
+    ray scattered_box;
+    vec3 attenuation_box;
+    // TODO: Move rec to the geometry object itself!!!
+    // metal_scatter(r, &rec, &attenuation, &scattered, &mat);
+    // return attenuation_box * color(&scattered_box, scene, depth - 1);
+    return vec3(rec2.normal.x(), rec2.normal.y(), rec2.normal.z());
   } else {
-      vec3 unit_direction = unit_vector(r->direction());
-      float t = 0.5*(unit_direction.y() + 1.0);
-      return (1.0-t)*vec3(1.0, 1.0, 1.0) + t*vec3(0.5, 0.7, 1.0);
-    }
+    vec3 unit_direction = unit_vector(r->direction());
+    float t = 0.5*(unit_direction.y() + 1.0);
+    return (1.0-t)*vec3(1.0, 1.0, 1.0) + t*vec3(0.5, 0.7, 1.0);
   }
+}
 
 
 int w_width = 400;
