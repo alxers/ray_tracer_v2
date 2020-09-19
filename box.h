@@ -22,6 +22,10 @@ struct aabb
   // min and max bounds
   vec3 vmin;
   vec3 vmax;
+
+  // TODO: remove material from aabb
+  // probably should be in a "box" struct
+  struct material mat;
 };
 
 bool aabb_hit(ray *r, float tmin, float tmax, struct aabb *box, hit_record *rec) {

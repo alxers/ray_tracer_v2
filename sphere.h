@@ -1,8 +1,6 @@
 #ifndef SPHEREH
 #define SPHEREH
 
-#include "material.h"
-
 struct sphere
 {
   vec3 center;

@@ -22,9 +22,9 @@
 #define SPHERE_OBJ 1
 #define BOX_OBJ 2
 
-#define XY 3
-#define XZ 4
-#define YZ 5
+// #define XY 3
+// #define XZ 4
+// #define YZ 5
 
 #include <X11/Xlib.h>
 #include <stdio.h>
@@ -34,6 +34,7 @@
 
 #include "ray.h"
 #include "hittable.h"
+#include "material.h"
 #include "box.h"
 #include "sphere.h"
 #include "camera.h"
@@ -69,9 +70,11 @@ vec3 color(ray *r, struct world *scene, int depth) {
 
   hit_record rec2;
   hit_record temp_rec2;
+
   float t_min = 0.0;
   float t_max = MAXFLOAT;
   struct material mat;
+  struct material mat2;
 
   // Guard from too deep recursion
   if (depth <= 0) {
@@ -101,7 +104,7 @@ vec3 color(ray *r, struct world *scene, int depth) {
       rec2 = temp_rec2;
       // box_norm = box_normal(&scene->boxes[i], r->direction(), &rec2);
       // printf("%.6f %.6f %.6f\n", box_norm.x(), box_norm.y(), box_norm.z());
-      mat = { 2, vec3(0.8, 0.3, 0.3) };
+      mat2 = { 2, vec3(0.8, 0.3, 0.3) };
     }
   }
   // for (int i = 0; i < scene->boxes_count; i++) {
@@ -119,6 +122,7 @@ vec3 color(ray *r, struct world *scene, int depth) {
   if (hit_object == SPHERE_OBJ) {
     ray scattered;
     vec3 attenuation;
+
     if (mat.type == 1 && lambertian_scatter(r, &rec, &attenuation, &scattered, &mat)) {
       return attenuation * color(&scattered, scene, depth - 1);
     } else if (mat.type == 2 && metal_scatter(r, &rec, &attenuation, &scattered, &mat)) {
@@ -127,10 +131,9 @@ vec3 color(ray *r, struct world *scene, int depth) {
   } else if (hit_object == BOX_OBJ) {
     ray scattered_box;
     vec3 attenuation_box;
-    // TODO: Move rec to the geometry object itself!!!
-    // metal_scatter(r, &rec, &attenuation, &scattered, &mat);
-    // return attenuation_box * color(&scattered_box, scene, depth - 1);
-    return vec3(rec2.normal.x(), rec2.normal.y(), rec2.normal.z());
+    metal_scatter(r, &rec2, &attenuation_box, &scattered_box, &mat2);
+    return attenuation_box * color(&scattered_box, scene, depth - 1);
+    // return vec3(rec2.normal.x(), rec2.normal.y(), rec2.normal.z());
   } else {
     vec3 unit_direction = unit_vector(r->direction());
     float t = 0.5*(unit_direction.y() + 1.0);
