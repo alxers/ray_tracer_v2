@@ -95,9 +95,6 @@ vec3 color(ray *r, struct world *scene, int depth) {
   }
 
   for (int i = 0; i < scene->boxes_count; i++) {
-    // TODO: check why do we enter box_normal when row with box wasn't displayed
-    // b box.h:195
-    // or is it correct, but we enter here because of the box reflection in the sphere?
     if (aabb_hit(r, t_min, closest_so_far, &scene->boxes[i], &temp_rec2)) {
       hit_object = BOX_OBJ;
       closest_so_far = temp_rec2.t;
@@ -107,17 +104,6 @@ vec3 color(ray *r, struct world *scene, int depth) {
       mat2 = { 2, vec3(0.8, 0.3, 0.3) };
     }
   }
-  // for (int i = 0; i < scene->boxes_count; i++) {
-  //   struct box curr_box = scene->boxes[i];
-  //   if (box_hit(r, t_min, closest_so_far, &temp_rec, &curr_box.xy, &curr_box.xz, &curr_box.yz)) {
-  //     hit_object = BOX_OBJ;
-  //     closest_so_far = temp_rec.t;
-  //     rec = temp_rec;
-  //     // box_norm = box_normal(&scene->boxes[i], r->direction());
-  //     // printf("%.6f %.6f %.6f\n", box_norm.x(), box_norm.y(), box_norm.z());
-  //     mat = { 2, vec3(0.8, 0.3, 0.3) };
-  //   }
-  // }
 
   if (hit_object == SPHERE_OBJ) {
     ray scattered;
@@ -131,9 +117,10 @@ vec3 color(ray *r, struct world *scene, int depth) {
   } else if (hit_object == BOX_OBJ) {
     ray scattered_box;
     vec3 attenuation_box;
-    metal_scatter(r, &rec2, &attenuation_box, &scattered_box, &mat2);
-    return attenuation_box * color(&scattered_box, scene, depth - 1);
-    // return vec3(rec2.normal.x(), rec2.normal.y(), rec2.normal.z());
+    if (mat2.type == 1 && metal_scatter(r, &rec2, &attenuation_box, &scattered_box, &mat2)) {
+      return attenuation_box * color(&scattered_box, scene, depth - 1);
+    } else if (mat2.type == 2 && lambertian_scatter(r, &rec2, &attenuation_box, &scattered_box, &mat2))
+      return attenuation_box * color(&scattered_box, scene, depth - 1);
   } else {
     vec3 unit_direction = unit_vector(r->direction());
     float t = 0.5*(unit_direction.y() + 1.0);
