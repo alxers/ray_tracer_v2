@@ -29,6 +29,14 @@ bool lambertian_scatter(ray *r_in, hit_record *rec, vec3 *attenuation, ray *scat
   return true;
 }
 
+bool lambertian_scatter_box(ray *r_in, hit_record *rec, vec3 *attenuation, ray *scattered, struct material *mat) {
+  // TODO: should be random_in_unit_box();
+  vec3 target = rec->p + rec->normal + random_in_unit_sphere();
+  *scattered = ray(rec->p, target - rec->p);
+  *attenuation = mat->albedo;
+  return true;
+}
+
 bool metal_scatter(ray *r_in, hit_record *rec, vec3 *attenuation, ray *scattered, struct material *mat) {
   vec3 unit_vec_dir = unit_vector(r_in->direction());
   vec3 reflected = reflect(&unit_vec_dir, &rec->normal);

@@ -54,9 +54,9 @@ float random_num() {
 struct world {
   int spheres_count;
   int boxes_count;
-  struct xy_rect *xy;
-  struct xz_rect *xz;
-  struct yz_rect *yz;
+  // struct xy_rect *xy;
+  // struct xz_rect *xz;
+  // struct yz_rect *yz;
   struct sphere *spheres;
   struct aabb *boxes;
   // struct box *boxes;
@@ -99,9 +99,8 @@ vec3 color(ray *r, struct world *scene, int depth) {
       hit_object = BOX_OBJ;
       closest_so_far = temp_rec2.t;
       rec2 = temp_rec2;
-      // box_norm = box_normal(&scene->boxes[i], r->direction(), &rec2);
-      // printf("%.6f %.6f %.6f\n", box_norm.x(), box_norm.y(), box_norm.z());
-      mat2 = { 2, vec3(0.8, 0.3, 0.3) };
+      // mat2 = { 2, vec3(0.8, 0.6, 0.2) };
+      mat2 = { 1, vec3(0.8, 0.3, 0.3) };
     }
   }
 
@@ -117,9 +116,9 @@ vec3 color(ray *r, struct world *scene, int depth) {
   } else if (hit_object == BOX_OBJ) {
     ray scattered_box;
     vec3 attenuation_box;
-    if (mat2.type == 1 && metal_scatter(r, &rec2, &attenuation_box, &scattered_box, &mat2)) {
+    if (mat2.type == 2 && metal_scatter(r, &rec2, &attenuation_box, &scattered_box, &mat2)) {
       return attenuation_box * color(&scattered_box, scene, depth - 1);
-    } else if (mat2.type == 2 && lambertian_scatter(r, &rec2, &attenuation_box, &scattered_box, &mat2))
+    } else if (mat2.type == 1 && lambertian_scatter_box(r, &rec2, &attenuation_box, &scattered_box, &mat2))
       return attenuation_box * color(&scattered_box, scene, depth - 1);
   } else {
     vec3 unit_direction = unit_vector(r->direction());
@@ -147,12 +146,14 @@ void draw(struct camera cam) {
   struct material mat2 = { 1, vec3(0.8, 0.8, 0.0) };
   struct material mat3 = { 2, vec3(0.8, 0.6, 0.2) };
   struct material mat4 = { 2, vec3(0.8, 0.6, 0.8) };
-  struct sphere sp1 = { vec3(0, 0, -1), 0.5, mat1 };
+  struct material mat5 = { 1, vec3(0.8, 0.3, 0.3) };
+  // struct sphere sp1 = { vec3(0, 0, -1), 0.5, mat1 };
   struct sphere sp2 = { vec3(0, -100.5, -1), 100, mat2 };
-  struct sphere sp3 = { vec3(1, 0, -1), 0.5, mat3 };
+  struct sphere sp3 = { vec3(1, 0, -1), 0.3, mat3 };
   struct sphere sp4 = { vec3(-1, 0, -1), 0.5, mat4 };
+  struct sphere sp5 = { vec3(0, 1.5, -1), 0.8, mat5 };
 
-  struct sphere spheres[] = { sp1, sp2, sp3, sp4 };
+  struct sphere spheres[] = { sp2, sp3, sp4, sp5 };
 
   // struct aabb b1 = { vec3(-0.5, -0.5, -0.5), vec3(0.5, 0.5, 0.5) };
   struct aabb b1 = { vec3(-0.5, -0.5, -0.5), vec3(0.5, 0.5, 0.5) };
