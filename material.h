@@ -17,6 +17,14 @@ vec3 random_in_unit_sphere() {
   return p;
 }
 
+vec3 random_in_unit_box() {
+  vec3 p;
+  do {
+    p = 2.0 * vec3(drand48(), drand48(), drand48()) - vec3(1, 1, 1);
+  } while (p.x() == 1 || p.y() == 1 || p.z() == 1);
+  return p;
+}
+
 vec3 reflect(vec3 *v, vec3 *n) {
   return *v - 2 * dot(v, n) * (*n);
 }
@@ -31,7 +39,7 @@ bool lambertian_scatter(ray *r_in, hit_record *rec, vec3 *attenuation, ray *scat
 
 bool lambertian_scatter_box(ray *r_in, hit_record *rec, vec3 *attenuation, ray *scattered, struct material *mat) {
   // TODO: should be random_in_unit_box();
-  vec3 target = rec->p + rec->normal + random_in_unit_sphere();
+  vec3 target = rec->p + rec->normal + random_in_unit_box();
   *scattered = ray(rec->p, target - rec->p);
   *attenuation = mat->albedo;
   return true;

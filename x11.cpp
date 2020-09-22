@@ -99,8 +99,8 @@ vec3 color(ray *r, struct world *scene, int depth) {
       hit_object = BOX_OBJ;
       closest_so_far = temp_rec2.t;
       rec2 = temp_rec2;
-      // mat2 = { 2, vec3(0.8, 0.6, 0.2) };
-      mat2 = { 1, vec3(0.8, 0.3, 0.3) };
+      mat2 = { 2, vec3(0.8, 0.6, 0.2) };
+      // mat2 = { 1, vec3(0.8, 0.3, 0.3) };
     }
   }
 
@@ -131,7 +131,7 @@ vec3 color(ray *r, struct world *scene, int depth) {
 int w_width = 400;
 int w_height = 200;
 // Off by default, makes rendering too slow
-bool ANTIALIASING = false;
+bool ANTIALIASING = true;
 int samples_per_pixel = 50;
 int max_depth = 30;
 
