@@ -21,6 +21,7 @@ vec3 random_in_unit_box() {
   vec3 p;
   do {
     p = 2.0 * vec3(drand48(), drand48(), drand48()) - vec3(1, 1, 1);
+    // TODO: this is not correct
   } while (p.x() == 1 || p.y() == 1 || p.z() == 1);
   return p;
 }
