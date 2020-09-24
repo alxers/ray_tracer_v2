@@ -99,8 +99,7 @@ vec3 color(ray *r, struct world *scene, int depth) {
       hit_object = BOX_OBJ;
       closest_so_far = temp_rec2.t;
       rec2 = temp_rec2;
-      mat2 = { 2, vec3(0.8, 0.6, 0.2) };
-      // mat2 = { 1, vec3(0.8, 0.3, 0.3) };
+      mat2 = scene->boxes[i].mat;
     }
   }
 
@@ -156,8 +155,9 @@ void draw(struct camera cam) {
   struct sphere spheres[] = { sp2, sp3, sp4, sp5 };
 
   // struct aabb b1 = { vec3(-0.5, -0.5, -0.5), vec3(0.5, 0.5, 0.5) };
-  struct aabb b1 = { vec3(-0.5, -0.5, -0.5), vec3(0.5, 0.5, 0.5) };
-  struct aabb boxes[] = { b1 };
+  struct aabb b1 = { vec3(-0.5, -0.5, -0.5), vec3(0.5, 0.5, 0.5), mat4 };
+  struct aabb b2 = { vec3(-2.5, 0.0, -0.9), vec3(-2.1, 0.3, -0.3), mat5 };
+  struct aabb boxes[] = { b1, b2 };
 
   // float x0 = -0.5;
   // float y0 = -0.5;
@@ -182,7 +182,7 @@ void draw(struct camera cam) {
   scene.spheres = spheres;
   scene.spheres_count = 4;
   scene.boxes = boxes;
-  scene.boxes_count = 1;
+  scene.boxes_count = 2;
 
 
   for (int j = w_height - 1; j >= 0; --j) {
