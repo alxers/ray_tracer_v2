@@ -22,9 +22,8 @@
 #define SPHERE_OBJ 1
 #define BOX_OBJ 2
 
-// #define XY 3
-// #define XZ 4
-// #define YZ 5
+#define MATTE 1
+#define METAL 2
 
 #include <X11/Xlib.h>
 #include <stdio.h>
@@ -107,17 +106,17 @@ vec3 color(ray *r, struct world *scene, int depth) {
     ray scattered;
     vec3 attenuation;
 
-    if (mat.type == 1 && lambertian_scatter(r, &rec, &attenuation, &scattered, &mat)) {
+    if (mat.type == MATTE && lambertian_scatter(r, &rec, &attenuation, &scattered, &mat)) {
       return attenuation * color(&scattered, scene, depth - 1);
-    } else if (mat.type == 2 && metal_scatter(r, &rec, &attenuation, &scattered, &mat)) {
+    } else if (mat.type == METAL && metal_scatter(r, &rec, &attenuation, &scattered, &mat)) {
       return attenuation * color(&scattered, scene, depth - 1);
     }
   } else if (hit_object == BOX_OBJ) {
     ray scattered_box;
     vec3 attenuation_box;
-    if (mat2.type == 2 && metal_scatter(r, &rec2, &attenuation_box, &scattered_box, &mat2)) {
+    if (mat2.type == METAL && metal_scatter(r, &rec2, &attenuation_box, &scattered_box, &mat2)) {
       return attenuation_box * color(&scattered_box, scene, depth - 1);
-    } else if (mat2.type == 1 && lambertian_scatter_box(r, &rec2, &attenuation_box, &scattered_box, &mat2))
+    } else if (mat2.type == MATTE && lambertian_scatter_box(r, &rec2, &attenuation_box, &scattered_box, &mat2))
       return attenuation_box * color(&scattered_box, scene, depth - 1);
   } else {
     vec3 unit_direction = unit_vector(r->direction());
@@ -130,7 +129,7 @@ vec3 color(ray *r, struct world *scene, int depth) {
 int w_width = 400;
 int w_height = 200;
 // Off by default, makes rendering too slow
-bool ANTIALIASING = true;
+bool ANTIALIASING = false;
 int samples_per_pixel = 50;
 int max_depth = 30;
 
@@ -156,7 +155,7 @@ void draw(struct camera cam) {
 
   // struct aabb b1 = { vec3(-0.5, -0.5, -0.5), vec3(0.5, 0.5, 0.5) };
   struct aabb b1 = { vec3(-0.5, -0.5, -0.5), vec3(0.5, 0.5, 0.5), mat4 };
-  struct aabb b2 = { vec3(-2.5, 0.0, -0.9), vec3(-2.1, 0.3, -0.3), mat5 };
+  struct aabb b2 = { vec3(-2.5, -0.5, -1.0), vec3(-2.0, 0.0, -0.5), mat5 };
   struct aabb boxes[] = { b1, b2 };
 
   // float x0 = -0.5;
