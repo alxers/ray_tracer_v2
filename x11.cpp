@@ -43,22 +43,11 @@ unsigned long _rgb(int r, int g, int b) {
   return b + (g << 8) + (r << 16);
 }
 
-// Random number in 0 <= num < 1
-float random_num() {
-  // TODO: replace rand()
-  // return rand() % ();
-  return 0;
-}
-
 struct world {
   int spheres_count;
   int boxes_count;
-  // struct xy_rect *xy;
-  // struct xz_rect *xz;
-  // struct yz_rect *yz;
   struct sphere *spheres;
   struct aabb *boxes;
-  // struct box *boxes;
 };
 
 // Ray helper functions
@@ -131,6 +120,9 @@ int w_height = 200;
 // Off by default, makes rendering too slow
 bool ANTIALIASING = false;
 int samples_per_pixel = 50;
+// scale is used for gamma correction
+int scale = 1; //1 / samples_per_pixel;
+// Limiting the number of child rays
 int max_depth = 30;
 
 // Xlib variables
@@ -157,24 +149,6 @@ void draw(struct camera cam) {
   struct aabb b1 = { vec3(-0.5, -0.5, -0.5), vec3(0.5, 0.5, 0.5), mat4 };
   struct aabb b2 = { vec3(-2.5, -0.5, -1.0), vec3(-2.0, 0.0, -0.5), mat5 };
   struct aabb boxes[] = { b1, b2 };
-
-  // float x0 = -0.5;
-  // float y0 = -0.5;
-  // float z0 = -0.5;
-  // float x1 = 0.5;
-  // float y1 = 0.5;
-  // float z1 = 0.5;
-  // struct xy_rect xy = { x0, x1, y0, y1, z0 };
-  // struct xz_rect xz = { x0, x1, z0, z1, y0 };
-  // struct yz_rect yz = { y0, y1, z0, z1, x0 };
-  // struct box b2 = {
-  //   vec3(x0, y0, z0),
-  //   vec3(x1, y1, z1),
-  //   xy,
-  //   xz,
-  //   yz
-  // };
-  // struct box boxes[] = { b2 };
 
   // Create scene with geometry objects
   struct world scene;
@@ -206,7 +180,7 @@ void draw(struct camera cam) {
         ray r = get_ray(u, v, cam);
         col = color(&r, &scene, max_depth);
         // Compensate gamma correctness?
-        col = vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
+        col = vec3(sqrt(scale * col[0]), sqrt(scale * col[1]), sqrt(scale * col[2]));
       }
 
       int ir = int(255.999 * col[0]);

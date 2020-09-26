@@ -8,10 +8,6 @@ struct sphere
   struct material mat;
 };
 
-// sphere bounding box
-// struct sphere sp;
-// aabb(sp.center - vec3(sp.radius, sp.radius, sp.radius), sp.center + vec3(sp.radius, sp.radius, sp.radius));
-
 float hit_sphere(struct sphere *s, ray *r, float t_min, float t_max, hit_record *rec) {
   vec3 oc = r->origin() - s->center;
   vec3 r_dir = r->direction();
