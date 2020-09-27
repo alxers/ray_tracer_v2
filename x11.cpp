@@ -118,12 +118,12 @@ vec3 color(ray *r, struct world *scene, int depth) {
 int w_width = 400;
 int w_height = 200;
 // Off by default, makes rendering too slow
-bool ANTIALIASING = false;
-int samples_per_pixel = 50;
+bool ANTIALIASING = true;
+int samples_per_pixel = 100;
 // scale is used for gamma correction
-int scale = 1; //1 / samples_per_pixel;
+// int scale = 1 / samples_per_pixel;
 // Limiting the number of child rays
-int max_depth = 30;
+int max_depth = 50;
 
 // Xlib variables
 Display *disp;
@@ -179,13 +179,14 @@ void draw(struct camera cam) {
 
         ray r = get_ray(u, v, cam);
         col = color(&r, &scene, max_depth);
-        // Compensate gamma correctness?
-        col = vec3(sqrt(scale * col[0]), sqrt(scale * col[1]), sqrt(scale * col[2]));
       }
 
-      int ir = int(255.999 * col[0]);
-      int ig = int(255.999 * col[1]);
-      int ib = int(255.999 * col[2]);
+      // Compensate gamma correctness
+      col = vec3(sqrt(col[0]), sqrt(col[1]), sqrt(col[2]));
+
+      int ir = int(255.99 * col[0]);
+      int ig = int(255.99 * col[1]);
+      int ib = int(255.99 * col[2]);
 
       // Set colors
       XSetForeground(disp, DefaultGC(disp, screen), _rgb(ir, ig, ib));
