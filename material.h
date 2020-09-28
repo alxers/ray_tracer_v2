@@ -17,20 +17,11 @@ vec3 random_in_unit_sphere() {
   return p;
 }
 
-// vec3 random_in_unit_box() {
-//   vec3 p;
-//   do {
-//     p = 2.0 * vec3(drand48(), drand48(), drand48()) - vec3(1, 1, 1);
-//     // TODO: this is not correct
-//   } while (
-//     p.x() == 1 || p.y() == 1 || p.z() == 1 ||
-//     p.x() == -1 || p.y() == -1 || p.z() == -1
-//   );
-//   // printf("%0.6f %0.6f %0.6f\n", p.x(), p.y(), p.z());
-//   return p;
-// }
-
 vec3 random_in_unit_box() {
+  // vec3 p;
+  // p = 2.0 * vec3(drand48(), drand48(), drand48()) - vec3(1, 1, 1);
+  // printf("%0.6f %0.6f %0.6f\n", p.x(), p.y(), p.z());
+  // return p;
   return 2.0 * vec3(drand48(), drand48(), drand48()) - vec3(1, 1, 1);
 }
 
