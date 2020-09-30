@@ -32,9 +32,12 @@ vec3 reflect(vec3 *v, vec3 *n) {
 }
 
 // Lambertian reflectance is the property that defines an ideal "matte" or diffusely reflecting surface
+// Light that reflects from diffuse surface has random directons.
+// so almost any algo that randomazes direction will produce the matte surface.
 bool lambertian_scatter(ray *r_in, hit_record *rec, vec3 *attenuation, ray *scattered, struct material *mat) {
   vec3 target = rec->p + rec->normal + random_in_unit_sphere();
   *scattered = ray(rec->p, target - rec->p);
+  // "fading"
   *attenuation = mat->albedo;
   return true;
 }

@@ -29,6 +29,15 @@ struct aabb
 };
 
 bool aabb_hit(ray *r, float tmin, float tmax, struct aabb *box, hit_record *rec) {
+  // "slab" method:
+  // n-dimensional aabb is an intersection of n-axis aligned intervals
+  // for ray to hit one interval we need to figure out whether the ray hits the boundaries.
+  // Since the ray is a function p(t) = A + tB the equation applies to all three of x, y, z coords
+  // f.e. x(t) = Ax + t*Bx;
+  // This ray hits the plane x = x0 at the t:
+  // x0 = Ax + t0 * Bx;
+  // thus the hitpoint is t0 = (x0 - Ax) / Bx, same for t1.
+  // Now for a hit the "t" intervals should overlap.
   for (int i = 0; i < 3; i++) {
     float t0 = min((box->vmin[i] - r->origin()[i]) / r->direction()[i],
                    (box->vmax[i] - r->origin()[i]) / r->direction()[i]);
