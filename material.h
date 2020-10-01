@@ -24,6 +24,9 @@ vec3 random_in_unit_box() {
   // p = 2.0 * vec3(drand48(), drand48(), drand48()) - vec3(1, 1, 1);
   // printf("%0.6f %0.6f %0.6f\n", p.x(), p.y(), p.z());
   // return p;
+
+  // drand48 always return a float between 0 and 1
+  // we need a random float between -1 and 1
   return 2.0 * vec3(drand48(), drand48(), drand48()) - vec3(1, 1, 1);
 }
 

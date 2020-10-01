@@ -114,14 +114,12 @@ vec3 color(ray *r, struct world *scene, int depth) {
   }
 }
 
-
-int w_width = 400;
-int w_height = 200;
+// TODO: profile and check how slower it would be with highres
+int w_width = 1024;
+int w_height = 768;
 // Off by default, makes rendering too slow
 bool ANTIALIASING = true;
-int samples_per_pixel = 100;
-// scale is used for gamma correction
-// int scale = 1 / samples_per_pixel;
+int samples_per_pixel = 50;
 // Limiting the number of child rays
 int max_depth = 50;
 
@@ -222,8 +220,8 @@ int main(void) {
   // Ray setup
   struct camera cam;
   // TODO: check if zoom in/out is the same as W/D
-  int lfrom_x = -2;
-  int lfrom_y = 2;
+  int lfrom_x = -7;
+  int lfrom_y = 1;
   int lfrom_z = 1;
   vec3 lookfrom = vec3(lfrom_x, lfrom_y, lfrom_z);
   vec3 lookat = vec3(0, 0, -1);
