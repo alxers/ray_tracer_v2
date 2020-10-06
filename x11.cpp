@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
 
 #include "ray.h"
 #include "hittable.h"
@@ -37,6 +38,13 @@
 #include "box.h"
 #include "sphere.h"
 #include "camera.h"
+
+// Performance counter
+long int deltaT;
+struct timespec startTime;
+struct timespec endTime;
+clockid_t cl_id = CLOCK_REALTIME;
+//
 
 // Make mapping so that it's possible to use RGB in Xlib
 unsigned long _rgb(int r, int g, int b) {
@@ -231,7 +239,11 @@ int main(void) {
   set_cam(lookfrom, lookat, vup, vfov, a_ratio, &cam);
   // end Ray setup
   
+  // measure performance
+  clock_gettime(cl_id, &startTime);
+
   while (1) {
+
     XNextEvent(disp, &event);
     if (event.type == Expose) {
       draw(cam);
