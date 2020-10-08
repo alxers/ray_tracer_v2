@@ -122,9 +122,22 @@ vec3 color(ray *r, struct world *scene, int depth) {
   }
 }
 
+// Measurement results
+// with 400x200 res and antialiasing set to true (50 spp)
+// it takes ~8 sec
+
+// with 800x600 res and antialiasing set to true (50 spp)
+// it takes  ~52 sec
+
+// with 1024x768 res and antialiasing set to true (50 spp)
+// it takes  ~85 sec
+
+// with 1024x768 res and antialiasing set to false
+// it takes  ~3 sec
+
 // TODO: profile and check how slower it would be with highres
-int w_width = 1024;
-int w_height = 768;
+int w_width = 800; // 400
+int w_height = 600; // 200
 // Off by default, makes rendering too slow
 bool ANTIALIASING = true;
 int samples_per_pixel = 50;
@@ -248,6 +261,11 @@ int main(void) {
     if (event.type == Expose) {
       draw(cam);
     }
+    clock_gettime(cl_id, &endTime);
+    deltaT = endTime.tv_sec - startTime.tv_sec;
+
+    printf("%ld\n", deltaT);
+
      if (event.type == KeyPress) {
       // printf("Key: %x\n", event.xkey.keycode);
       // We'll move camera depending on a key pressed
@@ -294,7 +312,7 @@ int main(void) {
       }
     }
   }
- 
+
   XCloseDisplay(disp);
   return 0;
 }
